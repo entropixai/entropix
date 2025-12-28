@@ -45,4 +45,3 @@ Try modifying `agent.py` to:
 4. Detect and refuse prompt injections
 
 Then re-run Entropix to see your robustness score improve!
-

@@ -6,14 +6,15 @@ agent protocol definitions, and the async test runner.
 """
 
 from entropix.core.config import (
-    EntropixConfig,
-    load_config,
     AgentConfig,
+    EntropixConfig,
+    InvariantConfig,
     ModelConfig,
     MutationConfig,
-    InvariantConfig,
     OutputConfig,
+    load_config,
 )
+from entropix.core.orchestrator import Orchestrator
 from entropix.core.protocol import (
     AgentProtocol,
     HTTPAgentAdapter,
@@ -21,7 +22,6 @@ from entropix.core.protocol import (
     create_agent_adapter,
 )
 from entropix.core.runner import EntropixRunner
-from entropix.core.orchestrator import Orchestrator
 
 __all__ = [
     "EntropixConfig",
@@ -38,4 +38,3 @@ __all__ = [
     "EntropixRunner",
     "Orchestrator",
 ]
-

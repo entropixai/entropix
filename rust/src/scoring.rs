@@ -51,7 +51,7 @@ pub fn calculate_statistics(results: &[MutationResult]) -> TestStatistics {
     let total = results.len();
     let passed = results.iter().filter(|r| r.passed).count();
     let failed = total - passed;
-    
+
     // Calculate robustness score
     let total_weight: f64 = results.iter().map(|r| r.weight).sum();
     let passed_weight: f64 = results
@@ -59,27 +59,27 @@ pub fn calculate_statistics(results: &[MutationResult]) -> TestStatistics {
         .filter(|r| r.passed)
         .map(|r| r.weight)
         .sum();
-    
+
     let robustness_score = if total_weight > 0.0 {
         passed_weight / total_weight
     } else {
         0.0
     };
-    
+
     // Calculate latency statistics
     let mut latencies: Vec<f64> = results.iter().map(|r| r.latency_ms).collect();
     latencies.sort_by(|a, b| a.partial_cmp(b).unwrap());
-    
+
     let avg_latency = if !latencies.is_empty() {
         latencies.iter().sum::<f64>() / latencies.len() as f64
     } else {
         0.0
     };
-    
+
     let p50 = percentile(&latencies, 50);
     let p95 = percentile(&latencies, 95);
     let p99 = percentile(&latencies, 99);
-    
+
     // Statistics by mutation type
     let mut type_stats = std::collections::HashMap::new();
     for result in results {
@@ -91,7 +91,7 @@ pub fn calculate_statistics(results: &[MutationResult]) -> TestStatistics {
             entry.1 += 1;
         }
     }
-    
+
     let by_type: Vec<TypeStatistics> = type_stats
         .into_iter()
         .map(|(mutation_type, (total, passed))| TypeStatistics {
@@ -101,7 +101,7 @@ pub fn calculate_statistics(results: &[MutationResult]) -> TestStatistics {
             pass_rate: passed as f64 / total as f64,
         })
         .collect();
-    
+
     TestStatistics {
         total_mutations: total,
         passed_mutations: passed,
@@ -120,7 +120,7 @@ fn percentile(sorted_values: &[f64], p: usize) -> f64 {
     if sorted_values.is_empty() {
         return 0.0;
     }
-    
+
     let index = (p as f64 / 100.0 * (sorted_values.len() - 1) as f64).round() as usize;
     sorted_values[index.min(sorted_values.len() - 1)]
 }
@@ -161,7 +161,7 @@ mod tests {
                 checks: vec![],
             },
         ];
-        
+
         let stats = calculate_statistics(&results);
         assert_eq!(stats.total_mutations, 3);
         assert_eq!(stats.passed_mutations, 2);
@@ -169,4 +169,3 @@ mod tests {
         assert!(stats.robustness_score > 0.5);
     }
 }
-

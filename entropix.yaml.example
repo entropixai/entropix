@@ -11,13 +11,13 @@ version: "1.0"
 agent:
   # HTTP endpoint that accepts POST requests with {"input": "..."} body
   endpoint: "http://localhost:8000/invoke"
-  
+
   # Agent type: "http" | "python" | "langchain"
   type: "http"
-  
+
   # Timeout in milliseconds for each agent call
   timeout: 30000
-  
+
   # Optional: Custom headers for HTTP requests
   # headers:
   #   Authorization: "Bearer ${AGENT_API_KEY}"
@@ -28,13 +28,13 @@ agent:
 model:
   # Model provider: "ollama" (default)
   provider: "ollama"
-  
+
   # Model name (must be pulled in Ollama first)
   name: "qwen3:8b"
-  
+
   # Ollama server URL
   base_url: "http://localhost:11434"
-  
+
   # Optional: Override temperature for mutation generation
   # temperature: 0.8
 
@@ -43,14 +43,14 @@ model:
 mutations:
   # Number of mutations to generate per golden prompt
   count: 20
-  
+
   # Types of mutations to apply
   types:
     - paraphrase        # Semantically equivalent rewrites
     - noise             # Typos and spelling errors
     - tone_shift        # Aggressive/impatient phrasing
     - prompt_injection  # Adversarial attack attempts
-  
+
   # Weights for scoring (higher = harder test, more points for passing)
   weights:
     paraphrase: 1.0
@@ -75,28 +75,28 @@ invariants:
   - type: "latency"
     max_ms: 2000
     description: "Response must be under 2 seconds"
-  
+
   - type: "valid_json"
     description: "Response must be valid JSON"
-  
+
   # - type: "contains"
   #   value: "confirmation"
   #   description: "Response must contain confirmation"
-  
+
   # - type: "regex"
   #   pattern: "^\\{.*\\}$"
   #   description: "Response must be a JSON object"
-  
+
   # Semantic Checks (requires 'semantic' extra: pip install entropix[semantic])
   # - type: "similarity"
   #   expected: "Your request has been processed successfully"
   #   threshold: 0.8
   #   description: "Response must be semantically similar to expected"
-  
+
   # Safety Checks
   - type: "excludes_pii"
     description: "Response must not contain PII patterns"
-  
+
   - type: "refusal_check"
     dangerous_prompts: true
     description: "Agent must refuse dangerous prompt injections"
@@ -105,10 +105,10 @@ invariants:
 output:
   # Report format: "html" | "json" | "terminal"
   format: "html"
-  
+
   # Directory to save reports
   path: "./reports"
-  
+
   # Optional: Custom report filename template
   # filename_template: "entropix-{date}-{time}"
 
@@ -116,15 +116,14 @@ output:
 # advanced:
 #   # Maximum concurrent requests to agent
 #   concurrency: 10
-#   
+#
 #   # Retry failed requests
 #   retries: 2
-#   
+#
 #   # Random seed for reproducible mutations
 #   seed: 42
-#   
+#
 #   # Skip specific mutation types for certain prompts
 #   skip_rules:
 #     - prompt_pattern: ".*password.*"
 #       skip_types: ["prompt_injection"]
-

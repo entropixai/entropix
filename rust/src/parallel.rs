@@ -16,7 +16,7 @@ where
         .num_threads(max_concurrency)
         .build()
         .unwrap_or_else(|_| rayon::ThreadPoolBuilder::new().build().unwrap());
-    
+
     pool.install(|| {
         items.into_par_iter().map(f).collect()
     })
@@ -39,7 +39,7 @@ where
         .chunks(batch_size)
         .map(|chunk| chunk.to_vec())
         .collect();
-    
+
     batches
         .into_par_iter()
         .flat_map(|batch| f(&batch))
@@ -57,4 +57,3 @@ mod tests {
         assert_eq!(results, vec![2, 4, 6, 8, 10]);
     }
 }
-

@@ -10,14 +10,17 @@ from __future__ import annotations
 import os
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
 
 import yaml
 from pydantic import BaseModel, Field, field_validator, model_validator
 
+# Import MutationType from mutations to avoid duplicate definition
+from entropix.mutations.types import MutationType
+
 
 class AgentType(str, Enum):
     """Supported agent connection types."""
+
     HTTP = "http"
     PYTHON = "python"
     LANGCHAIN = "langchain"
@@ -25,33 +28,23 @@ class AgentType(str, Enum):
 
 class AgentConfig(BaseModel):
     """Configuration for connecting to the target agent."""
-    
-    endpoint: str = Field(
-        ...,
-        description="Agent endpoint URL or Python module path"
-    )
-    type: AgentType = Field(
-        default=AgentType.HTTP,
-        description="Agent connection type"
-    )
+
+    endpoint: str = Field(..., description="Agent endpoint URL or Python module path")
+    type: AgentType = Field(default=AgentType.HTTP, description="Agent connection type")
     timeout: int = Field(
-        default=30000,
-        ge=1000,
-        le=300000,
-        description="Timeout in milliseconds"
+        default=30000, ge=1000, le=300000, description="Timeout in milliseconds"
     )
     headers: dict[str, str] = Field(
-        default_factory=dict,
-        description="Custom headers for HTTP requests"
+        default_factory=dict, description="Custom headers for HTTP requests"
     )
-    
+
     @field_validator("endpoint")
     @classmethod
     def validate_endpoint(cls, v: str) -> str:
         """Validate endpoint format based on type."""
         # Expand environment variables
         return os.path.expandvars(v)
-    
+
     @field_validator("headers")
     @classmethod
     def expand_header_env_vars(cls, v: dict[str, str]) -> dict[str, str]:
@@ -61,43 +54,33 @@ class AgentConfig(BaseModel):
 
 class ModelConfig(BaseModel):
     """Configuration for the mutation generation model."""
-    
-    provider: str = Field(
-        default="ollama",
-        description="Model provider (ollama)"
-    )
-    name: str = Field(
-        default="qwen3:8b",
-        description="Model name"
-    )
+
+    provider: str = Field(default="ollama", description="Model provider (ollama)")
+    name: str = Field(default="qwen3:8b", description="Model name")
     base_url: str = Field(
-        default="http://localhost:11434",
-        description="Model server URL"
+        default="http://localhost:11434", description="Model server URL"
     )
     temperature: float = Field(
-        default=0.8,
-        ge=0.0,
-        le=2.0,
-        description="Temperature for mutation generation"
+        default=0.8, ge=0.0, le=2.0, description="Temperature for mutation generation"
     )
-
-
-class MutationType(str, Enum):
-    """Types of adversarial mutations."""
-    PARAPHRASE = "paraphrase"
-    NOISE = "noise"
-    TONE_SHIFT = "tone_shift"
-    PROMPT_INJECTION = "prompt_injection"
 
 
 class MutationConfig(BaseModel):
-    """Configuration for mutation generation."""
-    
+    """
+    Configuration for mutation generation.
+
+    Open Source Edition Limits:
+    - Maximum 50 total mutations per test run
+    - 5 mutation types: paraphrase, noise, tone_shift, prompt_injection, custom
+
+    Upgrade to Entropix Cloud for unlimited mutations and advanced types.
+    """
+
     count: int = Field(
-        default=20,
+        default=10,
         ge=1,
-        le=100,
-        description="Number of mutations per golden prompt"
+        le=50,  # Open Source limit
+        description="Number of mutations per golden prompt (max 50 total per run)",
     )
     types: list[MutationType] = Field(
         default_factory=lambda: [
@@ -106,7 +89,7 @@ class MutationConfig(BaseModel):
             MutationType.TONE_SHIFT,
             MutationType.PROMPT_INJECTION,
         ],
-        description="Types of mutations to generate"
+        description="Types of mutations to generate (5 types available)",
     )
     weights: dict[MutationType, float] = Field(
         default_factory=lambda: {
@@ -114,13 +97,19 @@ class MutationConfig(BaseModel):
             MutationType.NOISE: 0.8,
             MutationType.TONE_SHIFT: 0.9,
             MutationType.PROMPT_INJECTION: 1.5,
+            MutationType.CUSTOM: 1.0,
         },
-        description="Scoring weights for each mutation type"
+        description="Scoring weights for each mutation type",
+    )
+    custom_templates: dict[str, str] = Field(
+        default_factory=dict,
+        description="Custom mutation templates (use {prompt} placeholder)",
     )
 
 
 class InvariantType(str, Enum):
     """Types of invariant checks."""
+
     # Deterministic
     CONTAINS = "contains"
     LATENCY = "latency"
@@ -135,46 +124,32 @@ class InvariantType(str, Enum):
 
 class InvariantConfig(BaseModel):
     """Configuration for a single invariant check."""
-    
-    type: InvariantType = Field(
-        ...,
-        description="Type of invariant check"
+
+    type: InvariantType = Field(..., description="Type of invariant check")
+    description: str | None = Field(
+        default=None, description="Human-readable description"
     )
-    description: Optional[str] = Field(
-        default=None,
-        description="Human-readable description"
-    )
-    
+
     # Type-specific fields
-    value: Optional[str] = Field(
-        default=None,
-        description="Value for 'contains' check"
+    value: str | None = Field(default=None, description="Value for 'contains' check")
+    max_ms: int | None = Field(
+        default=None, description="Maximum latency for 'latency' check"
     )
-    max_ms: Optional[int] = Field(
-        default=None,
-        description="Maximum latency for 'latency' check"
+    pattern: str | None = Field(
+        default=None, description="Regex pattern for 'regex' check"
     )
-    pattern: Optional[str] = Field(
-        default=None,
-        description="Regex pattern for 'regex' check"
+    expected: str | None = Field(
+        default=None, description="Expected text for 'similarity' check"
     )
-    expected: Optional[str] = Field(
-        default=None,
-        description="Expected text for 'similarity' check"
+    threshold: float | None = Field(
+        default=0.8, ge=0.0, le=1.0, description="Similarity threshold"
     )
-    threshold: Optional[float] = Field(
-        default=0.8,
-        ge=0.0,
-        le=1.0,
-        description="Similarity threshold"
+    dangerous_prompts: bool | None = Field(
+        default=True, description="Check for dangerous prompt handling"
     )
-    dangerous_prompts: Optional[bool] = Field(
-        default=True,
-        description="Check for dangerous prompt handling"
-    )
-    
+
     @model_validator(mode="after")
-    def validate_type_specific_fields(self) -> "InvariantConfig":
+    def validate_type_specific_fields(self) -> InvariantConfig:
         """Ensure required fields are present for each type."""
         if self.type == InvariantType.CONTAINS and not self.value:
             raise ValueError("'contains' invariant requires 'value' field")
@@ -189,6 +164,7 @@ class InvariantConfig(BaseModel):
 
 class OutputFormat(str, Enum):
     """Supported output formats."""
+
     HTML = "html"
     JSON = "json"
     TERMINAL = "terminal"
@@ -196,85 +172,58 @@ class OutputFormat(str, Enum):
 
 class OutputConfig(BaseModel):
     """Configuration for test output and reporting."""
-    
-    format: OutputFormat = Field(
-        default=OutputFormat.HTML,
-        description="Output format"
-    )
-    path: str = Field(
-        default="./reports",
-        description="Output directory path"
-    )
-    filename_template: Optional[str] = Field(
-        default=None,
-        description="Custom filename template"
+
+    format: OutputFormat = Field(default=OutputFormat.HTML, description="Output format")
+    path: str = Field(default="./reports", description="Output directory path")
+    filename_template: str | None = Field(
+        default=None, description="Custom filename template"
     )
 
 
 class AdvancedConfig(BaseModel):
     """Advanced configuration options."""
-    
+
     concurrency: int = Field(
-        default=10,
-        ge=1,
-        le=100,
-        description="Maximum concurrent requests"
+        default=10, ge=1, le=100, description="Maximum concurrent requests"
     )
     retries: int = Field(
-        default=2,
-        ge=0,
-        le=5,
-        description="Number of retries for failed requests"
+        default=2, ge=0, le=5, description="Number of retries for failed requests"
     )
-    seed: Optional[int] = Field(
-        default=None,
-        description="Random seed for reproducibility"
+    seed: int | None = Field(
+        default=None, description="Random seed for reproducibility"
     )
 
 
 class EntropixConfig(BaseModel):
     """Main configuration for Entropix."""
-    
-    version: str = Field(
-        default="1.0",
-        description="Configuration version"
-    )
-    agent: AgentConfig = Field(
-        ...,
-        description="Agent configuration"
-    )
+
+    version: str = Field(default="1.0", description="Configuration version")
+    agent: AgentConfig = Field(..., description="Agent configuration")
     model: ModelConfig = Field(
-        default_factory=ModelConfig,
-        description="Model configuration"
+        default_factory=ModelConfig, description="Model configuration"
     )
     mutations: MutationConfig = Field(
-        default_factory=MutationConfig,
-        description="Mutation configuration"
+        default_factory=MutationConfig, description="Mutation configuration"
     )
     golden_prompts: list[str] = Field(
-        ...,
-        min_length=1,
-        description="List of golden prompts to test"
+        ..., min_length=1, description="List of golden prompts to test"
     )
     invariants: list[InvariantConfig] = Field(
-        default_factory=list,
-        description="List of invariant checks"
+        default_factory=list, description="List of invariant checks"
     )
     output: OutputConfig = Field(
-        default_factory=OutputConfig,
-        description="Output configuration"
+        default_factory=OutputConfig, description="Output configuration"
     )
     advanced: AdvancedConfig = Field(
-        default_factory=AdvancedConfig,
-        description="Advanced configuration"
+        default_factory=AdvancedConfig, description="Advanced configuration"
     )
-    
+
     @classmethod
-    def from_yaml(cls, content: str) -> "EntropixConfig":
+    def from_yaml(cls, content: str) -> EntropixConfig:
         """Parse configuration from YAML string."""
         data = yaml.safe_load(content)
         return cls.model_validate(data)
-    
+
     def to_yaml(self) -> str:
         """Serialize configuration to YAML string."""
         data = self.model_dump(mode="json", exclude_none=True)
@@ -284,25 +233,25 @@ class EntropixConfig(BaseModel):
 def load_config(path: str | Path) -> EntropixConfig:
     """
     Load and validate an Entropix configuration file.
-    
+
     Args:
         path: Path to the entropix.yaml file
-        
+
     Returns:
         Validated EntropixConfig object
-        
+
     Raises:
         FileNotFoundError: If the config file doesn't exist
         ValidationError: If the config is invalid
     """
     config_path = Path(path)
-    
+
     if not config_path.exists():
         raise FileNotFoundError(
             f"Configuration file not found: {config_path}\n"
             "Run 'entropix init' to create a new configuration file."
         )
-    
+
     content = config_path.read_text(encoding="utf-8")
     return EntropixConfig.from_yaml(content)
 
@@ -343,4 +292,3 @@ def create_default_config() -> EntropixConfig:
             path="./reports",
         ),
     )
-

@@ -3,6 +3,13 @@ Orchestrator for Entropix Test Runs
 
 Coordinates the entire testing process: mutation generation,
 agent invocation, invariant verification, and result aggregation.
+
+Open Source Edition:
+- Sequential execution only (no parallelism)
+- Maximum 50 mutations per test run
+- Basic mutation types only
+
+Upgrade to Entropix Cloud for parallel execution and advanced features.
 """
 
 from __future__ import annotations
@@ -14,26 +21,36 @@ from typing import TYPE_CHECKING
 
 from rich.console import Console
 from rich.progress import (
+    BarColumn,
     Progress,
     SpinnerColumn,
-    TextColumn,
-    BarColumn,
     TaskProgressColumn,
+    TextColumn,
     TimeRemainingColumn,
 )
 
+from entropix.core.limits import (
+    MAX_MUTATIONS_PER_RUN,
+    PARALLEL_EXECUTION_ENABLED,
+    check_mutation_limit,
+    print_completion_upsell,
+    print_limit_warning,
+    print_sequential_notice,
+)
+
 if TYPE_CHECKING:
+    from entropix.assertions.verifier import InvariantVerifier
     from entropix.core.config import EntropixConfig
     from entropix.core.protocol import BaseAgentAdapter
     from entropix.mutations.engine import MutationEngine
-    from entropix.assertions.verifier import InvariantVerifier
-    from entropix.reports.models import TestResults
+    from entropix.mutations.types import Mutation
+    from entropix.reports.models import MutationResult, TestResults, TestStatistics
 
 
 @dataclass
 class OrchestratorState:
     """State tracking for the orchestrator."""
-    
+
     started_at: datetime = field(default_factory=datetime.now)
     completed_at: datetime | None = None
     total_mutations: int = 0
@@ -41,14 +58,14 @@ class OrchestratorState:
     passed_mutations: int = 0
     failed_mutations: int = 0
     errors: list[str] = field(default_factory=list)
-    
+
     @property
     def progress_percentage(self) -> float:
         """Calculate progress percentage."""
         if self.total_mutations == 0:
             return 0.0
         return (self.completed_mutations / self.total_mutations) * 100
-    
+
     @property
     def duration_seconds(self) -> float:
         """Calculate duration in seconds."""
@@ -59,26 +76,26 @@ class OrchestratorState:
 class Orchestrator:
     """
     Orchestrates the entire Entropix test run.
-    
+
     Coordinates between:
     - MutationEngine: Generates adversarial inputs
     - Agent: The system under test
     - InvariantVerifier: Validates responses
     - Reporter: Generates output reports
     """
-    
+
     def __init__(
         self,
-        config: "EntropixConfig",
-        agent: "BaseAgentAdapter",
-        mutation_engine: "MutationEngine",
-        verifier: "InvariantVerifier",
+        config: EntropixConfig,
+        agent: BaseAgentAdapter,
+        mutation_engine: MutationEngine,
+        verifier: InvariantVerifier,
         console: Console | None = None,
         show_progress: bool = True,
     ):
         """
         Initialize the orchestrator.
-        
+
         Args:
             config: Entropix configuration
             agent: Agent adapter to test
@@ -94,27 +111,46 @@ class Orchestrator:
         self.console = console or Console()
         self.show_progress = show_progress
         self.state = OrchestratorState()
-    
-    async def run(self) -> "TestResults":
+
+    async def run(self) -> TestResults:
         """
         Execute the full test run.
-        
+
+        Open Source Edition runs sequentially. Upgrade to Cloud for parallel.
+
         Returns:
             TestResults containing all test outcomes
         """
         from entropix.reports.models import (
             TestResults,
-            MutationResult,
-            TestStatistics,
         )
-        
+
         self.state = OrchestratorState()
         all_results: list[MutationResult] = []
-        
+
+        # Check limits and show notices
+        if self.show_progress:
+            print_sequential_notice(self.console)
+
         # Phase 1: Generate all mutations
         all_mutations = await self._generate_mutations()
+
+        # Enforce mutation limit for Open Source
+        if len(all_mutations) > MAX_MUTATIONS_PER_RUN:
+            violation = check_mutation_limit(
+                self.config.mutations.count,
+                len(self.config.golden_prompts),
+            )
+            if violation:
+                print_limit_warning(self.console, violation)
+            # Truncate to limit
+            all_mutations = all_mutations[:MAX_MUTATIONS_PER_RUN]
+            self.console.print(
+                f"[yellow]⚠️ Limited to {MAX_MUTATIONS_PER_RUN} mutations (Open Source)[/yellow]\n"
+            )
+
         self.state.total_mutations = len(all_mutations)
-        
+
         # Phase 2: Run mutations against agent
         if self.show_progress:
             with Progress(
@@ -129,7 +165,7 @@ class Orchestrator:
                     "Running attacks...",
                     total=len(all_mutations),
                 )
-                
+
                 all_results = await self._run_mutations_with_progress(
                     all_mutations,
                     progress,
@@ -137,12 +173,16 @@ class Orchestrator:
                 )
         else:
             all_results = await self._run_mutations(all_mutations)
-        
+
         # Phase 3: Compile results
         self.state.completed_at = datetime.now()
-        
+
         statistics = self._calculate_statistics(all_results)
-        
+
+        # Show upgrade prompt based on duration
+        if self.show_progress:
+            print_completion_upsell(self.console, self.state.duration_seconds)
+
         return TestResults(
             config=self.config,
             started_at=self.state.started_at,
@@ -150,13 +190,12 @@ class Orchestrator:
             mutations=all_results,
             statistics=statistics,
         )
-    
-    async def _generate_mutations(self) -> list[tuple[str, "Mutation"]]:
+
+    async def _generate_mutations(self) -> list[tuple[str, Mutation]]:
         """Generate all mutations for all golden prompts."""
-        from entropix.mutations.types import Mutation
-        
+
         all_mutations: list[tuple[str, Mutation]] = []
-        
+
         if self.show_progress:
             with Progress(
                 SpinnerColumn(),
@@ -169,7 +208,7 @@ class Orchestrator:
                     "Generating mutations...",
                     total=len(self.config.golden_prompts),
                 )
-                
+
                 for prompt in self.config.golden_prompts:
                     mutations = await self.mutation_engine.generate_mutations(
                         prompt,
@@ -188,62 +227,95 @@ class Orchestrator:
                 )
                 for mutation in mutations:
                     all_mutations.append((prompt, mutation))
-        
+
         return all_mutations
-    
+
     async def _run_mutations(
         self,
-        mutations: list[tuple[str, "Mutation"]],
-    ) -> list["MutationResult"]:
-        """Run all mutations without progress display."""
-        semaphore = asyncio.Semaphore(self.config.advanced.concurrency)
+        mutations: list[tuple[str, Mutation]],
+    ) -> list[MutationResult]:
+        """
+        Run all mutations.
+
+        Open Source Edition: Sequential execution (one at a time).
+        Cloud Edition: Parallel execution with configurable concurrency.
+        """
+        # Open Source: Force sequential execution (concurrency = 1)
+        concurrency = (
+            1 if not PARALLEL_EXECUTION_ENABLED else self.config.advanced.concurrency
+        )
+        semaphore = asyncio.Semaphore(concurrency)
+
+        # Sequential execution for Open Source
+        if not PARALLEL_EXECUTION_ENABLED:
+            results = []
+            for original, mutation in mutations:
+                result = await self._run_single_mutation(original, mutation, semaphore)
+                results.append(result)
+            return results
+
+        # Parallel execution (Cloud only)
         tasks = [
             self._run_single_mutation(original, mutation, semaphore)
             for original, mutation in mutations
         ]
         return await asyncio.gather(*tasks)
-    
+
     async def _run_mutations_with_progress(
         self,
-        mutations: list[tuple[str, "Mutation"]],
+        mutations: list[tuple[str, Mutation]],
         progress: Progress,
         task_id: int,
-    ) -> list["MutationResult"]:
-        """Run all mutations with progress display."""
-        from entropix.reports.models import MutationResult
-        
-        semaphore = asyncio.Semaphore(self.config.advanced.concurrency)
+    ) -> list[MutationResult]:
+        """
+        Run all mutations with progress display.
+
+        Open Source Edition: Sequential execution.
+        """
+        # Open Source: Force sequential execution
+        concurrency = (
+            1 if not PARALLEL_EXECUTION_ENABLED else self.config.advanced.concurrency
+        )
+        semaphore = asyncio.Semaphore(concurrency)
         results: list[MutationResult] = []
-        
+
+        # Sequential execution for Open Source
+        if not PARALLEL_EXECUTION_ENABLED:
+            for original, mutation in mutations:
+                result = await self._run_single_mutation(original, mutation, semaphore)
+                progress.update(task_id, advance=1)
+                results.append(result)
+            return results
+
+        # Parallel execution (Cloud only)
         async def run_with_progress(
             original: str,
-            mutation: "Mutation",
+            mutation: Mutation,
         ) -> MutationResult:
             result = await self._run_single_mutation(original, mutation, semaphore)
             progress.update(task_id, advance=1)
             return result
-        
+
         tasks = [
-            run_with_progress(original, mutation)
-            for original, mutation in mutations
+            run_with_progress(original, mutation) for original, mutation in mutations
         ]
-        
+
         results = await asyncio.gather(*tasks)
         return results
-    
+
     async def _run_single_mutation(
         self,
         original_prompt: str,
-        mutation: "Mutation",
+        mutation: Mutation,
         semaphore: asyncio.Semaphore,
-    ) -> "MutationResult":
+    ) -> MutationResult:
         """Run a single mutation against the agent."""
-        from entropix.reports.models import MutationResult, CheckResult
-        
+        from entropix.reports.models import CheckResult, MutationResult
+
         async with semaphore:
             # Invoke agent
             response = await self.agent.invoke_with_timing(mutation.mutated)
-            
+
             # Verify invariants
             if response.success:
                 verification = self.verifier.verify(
@@ -268,14 +340,14 @@ class Orchestrator:
                         details=response.error or "Unknown error",
                     )
                 ]
-            
+
             # Update state
             self.state.completed_mutations += 1
             if passed:
                 self.state.passed_mutations += 1
             else:
                 self.state.failed_mutations += 1
-            
+
             return MutationResult(
                 original_prompt=original_prompt,
                 mutation=mutation,
@@ -285,39 +357,39 @@ class Orchestrator:
                 checks=checks,
                 error=response.error,
             )
-    
+
     def _calculate_statistics(
         self,
-        results: list["MutationResult"],
-    ) -> "TestStatistics":
+        results: list[MutationResult],
+    ) -> TestStatistics:
         """Calculate test statistics from results."""
         from entropix.reports.models import TestStatistics, TypeStatistics
-        
+
         total = len(results)
         passed = sum(1 for r in results if r.passed)
         failed = total - passed
-        
+
         # Calculate weighted robustness score
         total_weight = sum(
-            self.config.mutations.weights.get(r.mutation.type, 1.0)
-            for r in results
+            self.config.mutations.weights.get(r.mutation.type, 1.0) for r in results
         )
         passed_weight = sum(
             self.config.mutations.weights.get(r.mutation.type, 1.0)
-            for r in results if r.passed
+            for r in results
+            if r.passed
         )
         robustness_score = passed_weight / total_weight if total_weight > 0 else 0.0
-        
+
         # Latency statistics
         latencies = sorted(r.latency_ms for r in results)
         avg_latency = sum(latencies) / len(latencies) if latencies else 0.0
-        
+
         def percentile(sorted_vals: list[float], p: int) -> float:
             if not sorted_vals:
                 return 0.0
             idx = int(p / 100 * (len(sorted_vals) - 1))
             return sorted_vals[idx]
-        
+
         # Statistics by mutation type
         type_stats: dict[str, TypeStatistics] = {}
         for result in results:
@@ -332,11 +404,11 @@ class Orchestrator:
             type_stats[type_name].total += 1
             if result.passed:
                 type_stats[type_name].passed += 1
-        
+
         # Calculate pass rates
         for stats in type_stats.values():
             stats.pass_rate = stats.passed / stats.total if stats.total > 0 else 0.0
-        
+
         return TestStatistics(
             total_mutations=total,
             passed_mutations=passed,
@@ -349,4 +421,3 @@ class Orchestrator:
             by_type=list(type_stats.values()),
             duration_seconds=self.state.duration_seconds,
         )
-

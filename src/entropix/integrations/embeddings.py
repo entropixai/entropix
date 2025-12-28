@@ -11,4 +11,3 @@ from __future__ import annotations
 from entropix.assertions.semantic import LocalEmbedder
 
 __all__ = ["LocalEmbedder"]
-

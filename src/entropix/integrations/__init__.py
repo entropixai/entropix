@@ -20,12 +20,14 @@ def __getattr__(name: str):
     """Lazy loading of integration modules."""
     if name == "HuggingFaceModelProvider":
         from entropix.integrations.huggingface import HuggingFaceModelProvider
+
         return HuggingFaceModelProvider
     elif name == "GitHubActionsIntegration":
         from entropix.integrations.github_actions import GitHubActionsIntegration
+
         return GitHubActionsIntegration
     elif name == "LocalEmbedder":
         from entropix.assertions.semantic import LocalEmbedder
+
         return LocalEmbedder
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-

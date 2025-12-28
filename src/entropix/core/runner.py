@@ -12,11 +12,11 @@ from typing import TYPE_CHECKING
 
 from rich.console import Console
 
-from entropix.core.config import EntropixConfig, load_config
-from entropix.core.protocol import create_agent_adapter, BaseAgentAdapter
-from entropix.core.orchestrator import Orchestrator
-from entropix.mutations.engine import MutationEngine
 from entropix.assertions.verifier import InvariantVerifier
+from entropix.core.config import EntropixConfig, load_config
+from entropix.core.orchestrator import Orchestrator
+from entropix.core.protocol import BaseAgentAdapter, create_agent_adapter
+from entropix.mutations.engine import MutationEngine
 
 if TYPE_CHECKING:
     from entropix.reports.models import TestResults
@@ -25,18 +25,18 @@ if TYPE_CHECKING:
 class EntropixRunner:
     """
     Main runner for Entropix tests.
-    
+
     Provides a high-level interface for running reliability tests
     against AI agents. Handles configuration loading, component
     initialization, and test execution.
-    
+
     Example:
         >>> config = load_config("entropix.yaml")
         >>> runner = EntropixRunner(config)
         >>> results = await runner.run()
         >>> print(f"Score: {results.statistics.robustness_score:.1%}")
     """
-    
+
     def __init__(
         self,
         config: EntropixConfig | str | Path,
@@ -46,7 +46,7 @@ class EntropixRunner:
     ):
         """
         Initialize the test runner.
-        
+
         Args:
             config: Configuration object or path to config file
             agent: Optional pre-configured agent adapter
@@ -54,19 +54,19 @@ class EntropixRunner:
             show_progress: Whether to show progress bars
         """
         # Load config if path provided
-        if isinstance(config, (str, Path)):
+        if isinstance(config, str | Path):
             self.config = load_config(config)
         else:
             self.config = config
-        
+
         self.console = console or Console()
         self.show_progress = show_progress
-        
+
         # Initialize components
         self.agent = agent or create_agent_adapter(self.config.agent)
         self.mutation_engine = MutationEngine(self.config.model)
         self.verifier = InvariantVerifier(self.config.invariants)
-        
+
         # Create orchestrator
         self.orchestrator = Orchestrator(
             config=self.config,
@@ -76,35 +76,35 @@ class EntropixRunner:
             console=self.console,
             show_progress=self.show_progress,
         )
-    
-    async def run(self) -> "TestResults":
+
+    async def run(self) -> TestResults:
         """
         Execute the full test suite.
-        
+
         Generates mutations from golden prompts, runs them against
         the agent, verifies invariants, and compiles results.
-        
+
         Returns:
             TestResults containing all test outcomes and statistics
         """
         return await self.orchestrator.run()
-    
+
     async def verify_setup(self) -> bool:
         """
         Verify that all components are properly configured.
-        
+
         Checks:
         - Ollama server is running and model is available
         - Agent endpoint is reachable
         - Configuration is valid
-        
+
         Returns:
             True if setup is valid, False otherwise
         """
         from rich.panel import Panel
-        
+
         all_ok = True
-        
+
         # Check Ollama connection
         self.console.print("Checking Ollama connection...", style="dim")
         ollama_ok = await self.mutation_engine.verify_connection()
@@ -117,7 +117,7 @@ class EntropixRunner:
                 f"  [red]✗[/red] Failed to connect to Ollama at {self.config.model.base_url}"
             )
             all_ok = False
-        
+
         # Check agent endpoint
         self.console.print("Checking agent endpoint...", style="dim")
         try:
@@ -133,7 +133,7 @@ class EntropixRunner:
         except Exception as e:
             self.console.print(f"  [red]✗[/red] Agent connection failed: {e}")
             all_ok = False
-        
+
         # Summary
         if all_ok:
             self.console.print(
@@ -151,9 +151,9 @@ class EntropixRunner:
                     border_style="red",
                 )
             )
-        
+
         return all_ok
-    
+
     def get_config_summary(self) -> str:
         """Get a summary of the current configuration."""
         lines = [
@@ -165,4 +165,3 @@ class EntropixRunner:
             f"Concurrency: {self.config.advanced.concurrency}",
         ]
         return "\n".join(lines)
-

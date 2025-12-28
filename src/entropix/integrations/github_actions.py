@@ -1,16 +1,40 @@
 """
 GitHub Actions Integration
 
-Provides helpers for CI/CD integration with GitHub Actions.
+⚠️ CLOUD FEATURE: GitHub Actions integration is available in Entropix Cloud.
+The Open Source edition provides documentation only.
+
+Upgrade to Entropix Cloud for:
+- One-click CI/CD integration
+- Block PRs based on reliability score
+- Automated test history tracking
+- Team notifications
+
+→ https://entropix.cloud
 """
 
 from __future__ import annotations
 
 from pathlib import Path
 
+from entropix.core.limits import CLOUD_URL, GITHUB_ACTIONS_ENABLED
 
-# GitHub Action YAML template
-ACTION_YAML = """name: 'Entropix Agent Test'
+
+class GitHubActionsDisabledError(Exception):
+    """Raised when trying to use GitHub Actions in Open Source edition."""
+
+    def __init__(self):
+        super().__init__(
+            "GitHub Actions integration is available in Entropix Cloud.\n"
+            f"Upgrade at: {CLOUD_URL}"
+        )
+
+
+# GitHub Action YAML template (for reference/documentation)
+ACTION_YAML = """# ⚠️ CLOUD FEATURE: This requires Entropix Cloud
+# Upgrade at: https://entropix.cloud
+
+name: 'Entropix Agent Test'
 description: 'Run chaos testing on AI agents to verify reliability'
 author: 'Entropix'
 
@@ -27,22 +51,17 @@ inputs:
     description: 'Minimum robustness score to pass (0.0-1.0)'
     required: false
     default: '0.9'
-  python_version:
-    description: 'Python version to use'
-    required: false
-    default: '3.11'
-  ollama_model:
-    description: 'Ollama model to use for mutations'
-    required: false
-    default: 'qwen3:8b'
+  api_key:
+    description: 'Entropix Cloud API key (required)'
+    required: true
 
 outputs:
   score:
     description: 'The robustness score achieved'
   passed:
     description: 'Whether the test passed (true/false)'
-  report_path:
-    description: 'Path to the generated HTML report'
+  report_url:
+    description: 'URL to the full report on Entropix Cloud'
 
 runs:
   using: 'composite'
@@ -50,61 +69,30 @@ runs:
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
-        python-version: ${{ inputs.python_version }}
-    
-    - name: Install Ollama
-      shell: bash
-      run: |
-        curl -fsSL https://ollama.ai/install.sh | sh
-    
-    - name: Start Ollama
-      shell: bash
-      run: |
-        ollama serve &
-        sleep 5
-    
-    - name: Pull Model
-      shell: bash
-      run: |
-        ollama pull ${{ inputs.ollama_model }}
-    
+        python-version: '3.11'
+
     - name: Install Entropix
       shell: bash
-      run: |
-        pip install entropix
-    
-    - name: Run Entropix Tests
-      id: test
+      run: pip install entropix
+
+    - name: Run Cloud Tests
       shell: bash
+      env:
+        ENTROPIX_API_KEY: ${{ inputs.api_key }}
       run: |
-        SCORE=$(entropix score --config ${{ inputs.config }})
-        echo "score=$SCORE" >> $GITHUB_OUTPUT
-        
-        if (( $(echo "$SCORE >= ${{ inputs.min_score }}" | bc -l) )); then
-          echo "passed=true" >> $GITHUB_OUTPUT
-        else
-          echo "passed=false" >> $GITHUB_OUTPUT
-          exit 1
-        fi
-    
-    - name: Generate Report
-      if: always()
-      shell: bash
-      run: |
-        entropix run --config ${{ inputs.config }} --output html
-        echo "report_path=./reports/$(ls -t ./reports/*.html | head -1)" >> $GITHUB_OUTPUT
-    
-    - name: Upload Report
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: entropix-report
-        path: ./reports/*.html
+        entropix cloud run \\
+          --config ${{ inputs.config }} \\
+          --min-score ${{ inputs.min_score }} \\
+          --ci
 """
 
 
 # Example workflow YAML
-WORKFLOW_EXAMPLE = """name: Agent Reliability Check
+WORKFLOW_EXAMPLE = """# Entropix Cloud CI/CD Integration
+# ⚠️ Requires Entropix Cloud subscription
+# Get started: https://entropix.cloud
+
+name: Agent Reliability Check
 
 on:
   push:
@@ -115,78 +103,153 @@ on:
 jobs:
   reliability-test:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Run Entropix
+
+      - name: Run Entropix Cloud Tests
         uses: entropix/entropix-action@v1
         with:
           config: entropix.yaml
           min_score: '0.9'
+          api_key: ${{ secrets.ENTROPIX_API_KEY }}
 """
 
 
 class GitHubActionsIntegration:
     """
     Helper class for GitHub Actions integration.
-    
-    Provides methods to generate action files and workflow examples.
+
+    ⚠️ NOTE: Full CI/CD integration requires Entropix Cloud.
+
+    The Open Source edition provides:
+    - Documentation and examples
+    - Local testing only
+
+    Entropix Cloud provides:
+    - One-click GitHub Actions setup
+    - Block PRs based on reliability score
+    - Test history and comparison
+    - Slack/Discord notifications
+
+    Upgrade at: https://entropix.cloud
     """
-    
+
+    @staticmethod
+    def _check_enabled() -> None:
+        """Check if GitHub Actions is enabled."""
+        if not GITHUB_ACTIONS_ENABLED:
+            raise GitHubActionsDisabledError()
+
     @staticmethod
     def generate_action_yaml() -> str:
         """
         Generate the GitHub Action definition YAML.
-        
+
+        Note: This returns documentation only in Open Source edition.
+        Full integration requires Entropix Cloud.
+
         Returns:
             Action YAML content
         """
         return ACTION_YAML.strip()
-    
+
     @staticmethod
     def generate_workflow_example() -> str:
         """
         Generate an example workflow that uses Entropix.
-        
+
+        Note: Requires Entropix Cloud for full functionality.
+
         Returns:
             Workflow YAML content
         """
         return WORKFLOW_EXAMPLE.strip()
-    
+
     @staticmethod
     def save_action(output_dir: Path) -> Path:
         """
         Save the GitHub Action files to a directory.
-        
+
+        ⚠️ Cloud Feature: This creates documentation only.
+        For working CI/CD, upgrade to Entropix Cloud.
+
         Args:
             output_dir: Directory to save action files
-            
+
         Returns:
             Path to the action.yml file
         """
         output_dir = Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
-        
+
         action_path = output_dir / "action.yml"
         action_path.write_text(ACTION_YAML.strip(), encoding="utf-8")
-        
+
+        # Also create a README explaining Cloud requirement
+        readme_path = output_dir / "README.md"
+        readme_path.write_text(
+            f"""# Entropix GitHub Action
+
+⚠️ **Cloud Feature**: Full CI/CD integration requires Entropix Cloud.
+
+## What You Get with Cloud
+
+- ✅ One-click GitHub Actions setup
+- ✅ Block PRs based on reliability score
+- ✅ Test history and comparison across runs
+- ✅ Slack/Discord notifications
+- ✅ 20x faster parallel execution
+
+## Upgrade
+
+Get started at: {CLOUD_URL}
+
+## Local Testing
+
+For local-only testing, use the Open Source CLI:
+
+```bash
+entropix run --config entropix.yaml
+```
+
+Note: Local runs are sequential and may be slow for large test suites.
+""",
+            encoding="utf-8",
+        )
+
         return action_path
-    
+
     @staticmethod
     def save_workflow_example(output_path: Path) -> Path:
         """
         Save an example workflow file.
-        
+
         Args:
             output_path: Path to save the workflow file
-            
+
         Returns:
             Path to the saved file
         """
         output_path = Path(output_path)
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text(WORKFLOW_EXAMPLE.strip(), encoding="utf-8")
-        
+
         return output_path
 
+    @staticmethod
+    def setup_ci(
+        repo_path: Path,
+        config_path: str = "entropix.yaml",
+        min_score: float = 0.9,
+    ) -> None:
+        """
+        Set up CI/CD integration for a repository.
+
+        ⚠️ Cloud Feature: Requires Entropix Cloud subscription.
+
+        Raises:
+            GitHubActionsDisabledError: Always in Open Source edition
+        """
+        GitHubActionsIntegration._check_enabled()
+        # Cloud implementation would go here

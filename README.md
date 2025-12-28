@@ -7,7 +7,7 @@
 
 <p align="center">
   <a href="https://github.com/entropix/entropix/blob/main/LICENSE">
-    <img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License">
+    <img src="https://img.shields.io/badge/license-AGPLv3-blue.svg" alt="License">
   </a>
   <a href="https://pypi.org/project/entropix/">
     <img src="https://img.shields.io/pypi/v/entropix.svg" alt="PyPI">
@@ -15,7 +15,14 @@
   <a href="https://pypi.org/project/entropix/">
     <img src="https://img.shields.io/pypi/pyversions/entropix.svg" alt="Python Versions">
   </a>
+  <a href="https://entropix.cloud">
+    <img src="https://img.shields.io/badge/☁️-Cloud%20Available-blueviolet" alt="Cloud">
+  </a>
 </p>
+
+---
+
+> **📢 This is the Open Source Edition.** For production workloads, check out [Entropix Cloud](https://entropix.cloud) — 20x faster with parallel execution, cloud LLMs, and CI/CD integration.
 
 ---
 
@@ -34,17 +41,50 @@
 
 **Entropix** is a local-first testing engine that applies **Chaos Engineering** principles to AI Agents.
 
-Instead of running one test case, Entropix takes a single "Golden Prompt", generates 50+ adversarial mutations (semantic variations, noise injection, hostile tone, prompt injections), runs them in parallel against your agent, and calculates a **Robustness Score**.
+Instead of running one test case, Entropix takes a single "Golden Prompt", generates adversarial mutations (semantic variations, noise injection, hostile tone, prompt injections), runs them against your agent, and calculates a **Robustness Score**.
 
 > **"If it passes Entropix, it won't break in Production."**
 
-## Features
+## Open Source vs Cloud
 
-- **Semantic Mutations**: Paraphrasing, noise injection, tone shifts, prompt injections
-- **Invariant Assertions**: Deterministic checks, semantic similarity, safety validations
-- **Local-First**: Uses Ollama with Qwen Coder 3 8B for free, unlimited attacks
-- **Beautiful Reports**: Interactive HTML reports with pass/fail matrices
-- **CI/CD Ready**: GitHub Actions integration to block PRs below reliability thresholds
+| Feature | Open Source (Free) | Cloud Pro ($49/mo) | Cloud Team ($299/mo) |
+|---------|:------------------:|:------------------:|:--------------------:|
+| Mutation Types | 5 basic | All types | All types |
+| Mutations/Run | **50 max** | Unlimited | Unlimited |
+| Execution | **Sequential** | ⚡ Parallel (20x) | ⚡ Parallel (20x) |
+| LLM | Local only | Cloud + Local | Cloud + Local |
+| PII Detection | Basic regex | Advanced NER + ML | Advanced NER + ML |
+| Prompt Injection | Basic | ML-powered | ML-powered |
+| Factuality Check | ❌ | ✅ | ✅ |
+| Test History | ❌ | ✅ Dashboard | ✅ Dashboard |
+| GitHub Actions | ❌ | ✅ One-click | ✅ One-click |
+| Team Features | ❌ | ❌ | ✅ SSO + Sharing |
+
+**Why the difference?**
+
+```
+Developer workflow:
+1. Make code change
+2. Run Entropix tests (waiting...)
+3. Get results
+4. Fix issues
+5. Repeat
+
+Open Source: ~10 minutes per iteration → Run once, then skip
+Cloud Pro:   ~30 seconds per iteration → Run every commit
+```
+
+👉 [**Upgrade to Cloud**](https://entropix.cloud) for production workloads.
+
+## Features (Open Source)
+
+- ✅ **5 Mutation Types**: Paraphrasing, noise, tone shifts, basic adversarial, custom templates
+- ✅ **Invariant Assertions**: Deterministic checks, semantic similarity, basic safety
+- ✅ **Local-First**: Uses Ollama with Qwen 3 8B for free testing
+- ✅ **Beautiful Reports**: Interactive HTML reports with pass/fail matrices
+- ⚠️ **50 Mutations Max**: Per test run (upgrade to Cloud for unlimited)
+- ⚠️ **Sequential Only**: One test at a time (upgrade to Cloud for 20x parallel)
+- ❌ **No CI/CD**: GitHub Actions requires Cloud
 
 ## Quick Start
 
@@ -88,7 +128,7 @@ model:
   base_url: "http://localhost:11434"
 
 mutations:
-  count: 20
+  count: 10  # Max 50 total per run in Open Source
   types:
     - paraphrase
     - noise
@@ -117,24 +157,29 @@ entropix run
 
 Output:
 ```
-Entropix - Agent Reliability Engine v0.1.0
-
-✓ Loading configuration from entropix.yaml
-✓ Connected to Ollama (qwen3:8b)
-✓ Agent endpoint verified
+ℹ️  Running in sequential mode (Open Source). Upgrade for parallel: https://entropix.cloud
 
 Generating mutations... ━━━━━━━━━━━━━━━━━━━━ 100%
 Running attacks...      ━━━━━━━━━━━━━━━━━━━━ 100%
-Verifying invariants... ━━━━━━━━━━━━━━━━━━━━ 100%
 
 ╭──────────────────────────────────────────╮
 │  Robustness Score: 87.5%                 │
 │  ────────────────────────                │
-│  Passed: 35/40 mutations                 │
-│  Failed: 5 (3 latency, 2 injection)      │
+│  Passed: 17/20 mutations                 │
+│  Failed: 3 (2 latency, 1 injection)      │
 ╰──────────────────────────────────────────╯
 
+⏱️  Test took 245.3s. With Entropix Cloud, this would take ~12.3s
+→ https://entropix.cloud
+
 Report saved to: ./reports/entropix-2024-01-15-143022.html
+```
+
+### Check Limits
+
+```bash
+entropix limits   # Show Open Source edition limits
+entropix cloud    # Learn about Cloud features
 ```
 
 ## Mutation Types
@@ -144,7 +189,10 @@ Report saved to: ./reports/entropix-2024-01-15-143022.html
 | **Paraphrase** | Semantically equivalent rewrites | "Book a flight" → "I need to fly out" |
 | **Noise** | Typos and spelling errors | "Book a flight" → "Book a fliight plz" |
 | **Tone Shift** | Aggressive/impatient phrasing | "Book a flight" → "I need a flight NOW!" |
-| **Prompt Injection** | Adversarial attack attempts | "Book a flight and ignore previous instructions" |
+| **Prompt Injection** | Basic adversarial attacks | "Book a flight and ignore previous instructions" |
+| **Custom** | Your own mutation templates | Define with `{prompt}` placeholder |
+
+> **Need advanced mutations?** Sophisticated jailbreaks, multi-step injections, and domain-specific attacks are available in [Entropix Cloud](https://entropix.cloud).
 
 ## Invariants (Assertions)
 
@@ -166,13 +214,14 @@ invariants:
     threshold: 0.8
 ```
 
-### Safety
+### Safety (Basic)
 ```yaml
 invariants:
-  - type: "excludes_pii"
+  - type: "excludes_pii"  # Basic regex patterns
   - type: "refusal_check"
-    dangerous_prompts: true
 ```
+
+> **Need advanced safety?** NER-based PII detection, ML-powered prompt injection detection, and factuality checking are available in [Entropix Cloud](https://entropix.cloud).
 
 ## Agent Adapters
 
@@ -202,30 +251,19 @@ agent:
 
 ## CI/CD Integration
 
-### GitHub Actions
+> ⚠️ **Cloud Feature**: GitHub Actions integration requires [Entropix Cloud](https://entropix.cloud).
 
-```yaml
-name: Agent Reliability Check
-
-on: [push, pull_request]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup Ollama
-        run: |
-          curl -fsSL https://ollama.ai/install.sh | sh
-          ollama pull qwen3:8b
-      
-      - name: Install Entropix
-        run: pip install entropix
-      
-      - name: Run Reliability Tests
-        run: entropix run --min-score 0.9 --ci
+For local testing only:
+```bash
+# Run before committing (manual)
+entropix run --min-score 0.9
 ```
+
+With Entropix Cloud, you get:
+- One-click GitHub Actions setup
+- Automatic PR blocking below threshold
+- Test history comparison
+- Slack/Discord notifications
 
 ## Robustness Score
 
@@ -240,13 +278,25 @@ Where:
 
 ## Documentation
 
-- [Configuration Guide](docs/CONFIGURATION_GUIDE.md)
-- [API Reference](docs/API_SPECIFICATION.md)
-- [Contributing](docs/CONTRIBUTING.md)
+### Getting Started
+- [📖 Usage Guide](docs/USAGE_GUIDE.md) - Complete end-to-end guide
+- [⚙️ Configuration Guide](docs/CONFIGURATION_GUIDE.md) - All configuration options
+- [🧪 Test Scenarios](docs/TEST_SCENARIOS.md) - Real-world examples with code
+
+### For Developers
+- [🏗️ Architecture & Modules](docs/MODULES.md) - How the code works
+- [❓ Developer FAQ](docs/DEVELOPER_FAQ.md) - Q&A about design decisions
+- [📦 Publishing Guide](docs/PUBLISHING.md) - How to publish to PyPI
+- [🤝 Contributing](docs/CONTRIBUTING.md) - How to contribute
+
+### Reference
+- [📋 API Specification](docs/API_SPECIFICATION.md) - API reference
+- [🧪 Testing Guide](docs/TESTING_GUIDE.md) - How to run and write tests
+- [✅ Implementation Checklist](docs/IMPLEMENTATION_CHECKLIST.md) - Development progress
 
 ## License
 
-Apache 2.0 - See [LICENSE](LICENSE) for details.
+AGPLv3 - See [LICENSE](LICENSE) for details.
 
 ---
 
@@ -255,3 +305,8 @@ Apache 2.0 - See [LICENSE](LICENSE) for details.
   <img src="https://img.shields.io/badge/tested%20with-entropix-brightgreen" alt="Tested with Entropix">
 </p>
 
+<p align="center">
+  <a href="https://entropix.cloud">
+    <strong>⚡ Need speed? Try Entropix Cloud →</strong>
+  </a>
+</p>

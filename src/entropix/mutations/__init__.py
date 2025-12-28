@@ -6,8 +6,8 @@ Supports paraphrasing, noise injection, tone shifting, and prompt injection.
 """
 
 from entropix.mutations.engine import MutationEngine
-from entropix.mutations.types import MutationType, Mutation
-from entropix.mutations.templates import MutationTemplates, MUTATION_TEMPLATES
+from entropix.mutations.templates import MUTATION_TEMPLATES, MutationTemplates
+from entropix.mutations.types import Mutation, MutationType
 
 __all__ = [
     "MutationEngine",
@@ -16,4 +16,3 @@ __all__ = [
     "MutationTemplates",
     "MUTATION_TEMPLATES",
 ]
-

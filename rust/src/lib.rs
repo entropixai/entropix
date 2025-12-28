@@ -34,10 +34,10 @@ fn calculate_robustness_score(
     if total == 0 {
         return 0.0;
     }
-    
-    let weighted_sum = semantic_weight * semantic_passed as f64 
+
+    let weighted_sum = semantic_weight * semantic_passed as f64
         + deterministic_weight * deterministic_passed as f64;
-    
+
     weighted_sum / total as f64
 }
 
@@ -52,18 +52,18 @@ fn calculate_weighted_score(
     if results.is_empty() {
         return 0.0;
     }
-    
+
     let total_weight: f64 = results.iter().map(|(_, w)| w).sum();
     let passed_weight: f64 = results
         .iter()
         .filter(|(passed, _)| *passed)
         .map(|(_, w)| w)
         .sum();
-    
+
     if total_weight == 0.0 {
         return 0.0;
     }
-    
+
     passed_weight / total_weight
 }
 
@@ -96,20 +96,20 @@ fn parallel_process_mutations(
 fn levenshtein_distance(s1: &str, s2: &str) -> usize {
     let len1 = s1.chars().count();
     let len2 = s2.chars().count();
-    
+
     if len1 == 0 {
         return len2;
     }
     if len2 == 0 {
         return len1;
     }
-    
+
     let s1_chars: Vec<char> = s1.chars().collect();
     let s2_chars: Vec<char> = s2.chars().collect();
-    
+
     let mut prev_row: Vec<usize> = (0..=len2).collect();
     let mut curr_row: Vec<usize> = vec![0; len2 + 1];
-    
+
     for i in 1..=len1 {
         curr_row[0] = i;
         for j in 1..=len2 {
@@ -121,7 +121,7 @@ fn levenshtein_distance(s1: &str, s2: &str) -> usize {
         }
         std::mem::swap(&mut prev_row, &mut curr_row);
     }
-    
+
     prev_row[len2]
 }
 
@@ -130,11 +130,11 @@ fn levenshtein_distance(s1: &str, s2: &str) -> usize {
 fn string_similarity(s1: &str, s2: &str) -> f64 {
     let distance = levenshtein_distance(s1, s2);
     let max_len = std::cmp::max(s1.chars().count(), s2.chars().count());
-    
+
     if max_len == 0 {
         return 1.0;
     }
-    
+
     1.0 - (distance as f64 / max_len as f64)
 }
 
@@ -183,4 +183,3 @@ mod tests {
         assert!(sim > 0.7 && sim < 0.9);
     }
 }
-

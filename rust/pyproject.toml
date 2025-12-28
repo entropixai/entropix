@@ -1,0 +1,21 @@
+[build-system]
+requires = ["maturin>=1.4,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "entropix_rust"
+version = "0.1.0"
+description = "High-performance Rust extensions for Entropix"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Rust",
+    "License :: OSI Approved :: Apache Software License",
+]
+
+[tool.maturin]
+features = ["pyo3/extension-module"]
+module-name = "entropix_rust"
