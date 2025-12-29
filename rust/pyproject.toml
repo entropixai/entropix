@@ -3,9 +3,9 @@ requires = ["maturin>=1.4,<2.0"]
 build-backend = "maturin"
 
 [project]
-name = "entropix_rust"
+name = "flakestorm_rust"
 version = "0.1.0"
-description = "High-performance Rust extensions for Entropix"
+description = "High-performance Rust extensions for flakestorm"
 requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -18,4 +18,4 @@ classifiers = [
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
-module-name = "entropix_rust"
+module-name = "flakestorm_rust"

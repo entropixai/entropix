@@ -1,4 +1,4 @@
-//! Parallel processing utilities for Entropix
+//! Parallel processing utilities for flakestorm
 //!
 //! This module provides efficient parallel processing for mutation generation
 //! and agent testing using Rayon.

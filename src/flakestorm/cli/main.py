@@ -1,5 +1,5 @@
 """
-Entropix CLI Main Entry Point
+flakestorm CLI Main Entry Point
 
 Provides the main Typer application and command routing.
 """
@@ -15,16 +15,17 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
 
-from entropix import __version__
-from entropix.core.limits import (
+from flakestorm import __version__
+from flakestorm.core.limits import (
     CLOUD_URL,
     MAX_MUTATIONS_PER_RUN,
     print_upgrade_banner,
 )
+from flakestorm.core.runner import FlakeStormRunner
 
 # Create the main app
 app = typer.Typer(
-    name="entropix",
+    name="flakestorm",
     help="The Agent Reliability Engine - Chaos Engineering for AI Agents [Open Source Edition]",
     add_completion=True,
     rich_markup_mode="rich",
@@ -37,7 +38,7 @@ def version_callback(value: bool) -> None:
     """Print version and exit."""
     if value:
         console.print(
-            f"[bold blue]Entropix[/bold blue] version {__version__} [dim](Open Source Edition)[/dim]"
+            f"[bold blue]flakestorm[/bold blue] version {__version__} [dim](Open Source Edition)[/dim]"
         )
         console.print(f"[dim]→ Upgrade to Cloud: {CLOUD_URL}[/dim]")
         raise typer.Exit()
@@ -55,7 +56,7 @@ def main(
     ),
 ) -> None:
     """
-    Entropix - The Agent Reliability Engine
+    flakestorm - The Agent Reliability Engine
 
     Apply chaos engineering to your AI agents. Generate adversarial
     mutations, test reliability, and prove production readiness.
@@ -66,7 +67,7 @@ def main(
 @app.command()
 def init(
     path: Path = typer.Argument(
-        Path("entropix.yaml"),
+        Path("flakestorm.yaml"),
         help="Path for the configuration file",
     ),
     force: bool = typer.Option(
@@ -77,12 +78,12 @@ def init(
     ),
 ) -> None:
     """
-    Initialize a new Entropix configuration file.
+    Initialize a new flakestorm configuration file.
 
-    Creates an entropix.yaml with sensible defaults that you can
+    Creates an flakestorm.yaml with sensible defaults that you can
     customize for your agent.
     """
-    from entropix.core.config import create_default_config
+    from flakestorm.core.config import create_default_config
 
     if path.exists() and not force:
         console.print(
@@ -102,8 +103,8 @@ def init(
             "Next steps:\n"
             "1. Edit the file to configure your agent endpoint\n"
             "2. Add your golden prompts\n"
-            "3. Run: [bold]entropix run[/bold]",
-            title="Entropix Initialized",
+            "3. Run: [bold]flakestorm run[/bold]",
+            title="flakestorm Initialized",
             border_style="green",
         )
     )
@@ -112,7 +113,7 @@ def init(
 @app.command()
 def run(
     config: Path = typer.Option(
-        Path("entropix.yaml"),
+        Path("flakestorm.yaml"),
         "--config",
         "-c",
         help="Path to configuration file",
@@ -172,22 +173,21 @@ async def _run_async(
     quiet: bool,
 ) -> None:
     """Async implementation of the run command."""
-    from entropix.core.runner import EntropixRunner
-    from entropix.reports.html import HTMLReportGenerator
-    from entropix.reports.json_export import JSONReportGenerator
-    from entropix.reports.terminal import TerminalReporter
+    from flakestorm.reports.html import HTMLReportGenerator
+    from flakestorm.reports.json_export import JSONReportGenerator
+    from flakestorm.reports.terminal import TerminalReporter
 
     # Print header
     if not quiet:
         console.print()
         console.print(
-            f"[bold blue]Entropix[/bold blue] - Agent Reliability Engine v{__version__}"
+            f"[bold blue]flakestorm[/bold blue] - Agent Reliability Engine v{__version__}"
         )
         console.print()
 
     # Load configuration
     try:
-        runner = EntropixRunner(
+        runner = FlakeStormRunner(
             config=config,
             console=console,
             show_progress=not quiet,
@@ -195,7 +195,7 @@ async def _run_async(
     except FileNotFoundError as e:
         console.print(f"[red]Error:[/red] {e}")
         console.print(
-            "\n[dim]Run 'entropix init' to create a configuration file.[/dim]"
+            "\n[dim]Run 'flakestorm init' to create a configuration file.[/dim]"
         )
         raise typer.Exit(1)
     except Exception as e:
@@ -254,14 +254,14 @@ async def _run_async(
 @app.command()
 def verify(
     config: Path = typer.Option(
-        Path("entropix.yaml"),
+        Path("flakestorm.yaml"),
         "--config",
         "-c",
         help="Path to configuration file",
     ),
 ) -> None:
     """
-    Verify that Entropix is properly configured.
+    Verify that flakestorm is properly configured.
 
     Checks:
     - Ollama server is running and model is available
@@ -273,14 +273,13 @@ def verify(
 
 async def _verify_async(config: Path) -> None:
     """Async implementation of verify command."""
-    from entropix.core.runner import EntropixRunner
 
     console.print()
-    console.print("[bold blue]Entropix[/bold blue] - Setup Verification")
+    console.print("[bold blue]flakestorm[/bold blue] - Setup Verification")
     console.print()
 
     try:
-        runner = EntropixRunner(
+        runner = FlakeStormRunner(
             config=config,
             console=console,
             show_progress=False,
@@ -317,17 +316,17 @@ def report(
     import json
     from datetime import datetime
 
-    from entropix.core.config import create_default_config
-    from entropix.mutations.types import Mutation
-    from entropix.reports.html import HTMLReportGenerator
-    from entropix.reports.models import (
+    from flakestorm.core.config import create_default_config
+    from flakestorm.mutations.types import Mutation
+    from flakestorm.reports.html import HTMLReportGenerator
+    from flakestorm.reports.models import (
         CheckResult,
         MutationResult,
         TestResults,
         TestStatistics,
         TypeStatistics,
     )
-    from entropix.reports.terminal import TerminalReporter
+    from flakestorm.reports.terminal import TerminalReporter
 
     if not path.exists():
         console.print(f"[red]File not found:[/red] {path}")
@@ -399,7 +398,7 @@ def report(
 @app.command()
 def score(
     config: Path = typer.Option(
-        Path("entropix.yaml"),
+        Path("flakestorm.yaml"),
         "--config",
         "-c",
         help="Path to configuration file",
@@ -416,9 +415,9 @@ def score(
 @app.command()
 def cloud() -> None:
     """
-    Learn about Entropix Cloud features.
+    Learn about flakestorm Cloud features.
 
-    Entropix Cloud provides 20x faster execution, advanced features,
+    flakestorm Cloud provides 20x faster execution, advanced features,
     and team collaboration.
     """
     print_upgrade_banner(console, reason="20x faster tests")
@@ -464,7 +463,7 @@ def limits() -> None:
     Show Open Source edition limits.
 
     Displays the feature limitations of the Open Source edition
-    and how to unlock more with Entropix Cloud.
+    and how to unlock more with flakestorm Cloud.
     """
     console.print(
         Panel(
@@ -485,7 +484,7 @@ def limits() -> None:
                 "• Individual developers\n\n"
                 f"[bold]Upgrade for production:[/bold] {CLOUD_URL}"
             ),
-            title="[bold blue]Entropix Open Source[/bold blue]",
+            title="[bold blue]flakestorm Open Source[/bold blue]",
             border_style="blue",
         )
     )
@@ -493,10 +492,9 @@ def limits() -> None:
 
 async def _score_async(config: Path) -> None:
     """Async implementation of score command."""
-    from entropix.core.runner import EntropixRunner
 
     try:
-        runner = EntropixRunner(
+        runner = FlakeStormRunner(
             config=config,
             console=console,
             show_progress=False,

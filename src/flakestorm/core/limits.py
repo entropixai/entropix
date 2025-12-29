@@ -2,7 +2,7 @@
 Open Source Edition Limits
 
 Defines feature limits for the open source (local-only) version.
-These limits encourage users to upgrade to Entropix Cloud for:
+These limits encourage users to upgrade to flakestorm Cloud for:
 - Faster parallel execution
 - Cloud LLMs (higher quality mutations)
 - Advanced features
@@ -65,8 +65,8 @@ ALLOWED_MUTATION_TYPES = [
 # UPGRADE MESSAGING
 # =============================================================================
 
-CLOUD_URL = "https://entropix.cloud"
-UPGRADE_CTA = f"⚡ Upgrade to Entropix Cloud for 20x faster execution → {CLOUD_URL}"
+CLOUD_URL = "https://flakestorm.cloud"
+UPGRADE_CTA = f"⚡ Upgrade to flakestorm Cloud for 20x faster execution → {CLOUD_URL}"
 
 
 @dataclass
@@ -138,7 +138,7 @@ def print_upgrade_banner(console: Console, reason: str = "faster execution") -> 
     banner = Panel(
         Text.from_markup(
             f"[bold yellow]⚡ Want {reason}?[/bold yellow]\n\n"
-            f"[white]Entropix Cloud offers:[/white]\n"
+            f"[white]flakestorm Cloud offers:[/white]\n"
             f"  • [green]20x faster[/green] parallel execution\n"
             f"  • [green]Cloud LLMs[/green] for higher quality mutations\n"
             f"  • [green]Advanced safety checks[/green] (NER, ML-detection)\n"
@@ -146,7 +146,7 @@ def print_upgrade_banner(console: Console, reason: str = "faster execution") -> 
             f"  • [green]Team features[/green] for collaboration\n\n"
             f"[bold cyan]→ {CLOUD_URL}[/bold cyan]"
         ),
-        title="[bold blue]Upgrade to Entropix Cloud[/bold blue]",
+        title="[bold blue]Upgrade to flakestorm Cloud[/bold blue]",
         border_style="blue",
         padding=(1, 2),
     )
@@ -184,7 +184,7 @@ def print_completion_upsell(console: Console, duration_seconds: float) -> None:
         )  # ~20x faster with parallel + cloud
         console.print(
             f"\n[dim]⏱️  Test took {duration_seconds:.1f}s. "
-            f"With Entropix Cloud, this would take ~{estimated_cloud_time:.1f}s[/dim]"
+            f"With flakestorm Cloud, this would take ~{estimated_cloud_time:.1f}s[/dim]"
         )
         console.print(f"[dim cyan]→ {CLOUD_URL}[/dim cyan]\n")
 

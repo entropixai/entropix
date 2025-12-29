@@ -17,7 +17,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from entropix.core.config import InvariantConfig, InvariantType
+    from flakestorm.core.config import InvariantConfig, InvariantType
 
 
 @dataclass
@@ -76,7 +76,7 @@ class ContainsChecker(BaseChecker):
 
     def check(self, response: str, latency_ms: float) -> CheckResult:
         """Check if response contains the required value."""
-        from entropix.core.config import InvariantType
+        from flakestorm.core.config import InvariantType
 
         value = self.config.value or ""
         passed = value.lower() in response.lower()
@@ -104,7 +104,7 @@ class LatencyChecker(BaseChecker):
 
     def check(self, response: str, latency_ms: float) -> CheckResult:
         """Check if latency is within threshold."""
-        from entropix.core.config import InvariantType
+        from flakestorm.core.config import InvariantType
 
         max_ms = self.config.max_ms or 5000
         passed = latency_ms <= max_ms
@@ -131,7 +131,7 @@ class ValidJsonChecker(BaseChecker):
 
     def check(self, response: str, latency_ms: float) -> CheckResult:
         """Check if response is valid JSON."""
-        from entropix.core.config import InvariantType
+        from flakestorm.core.config import InvariantType
 
         try:
             json.loads(response)
@@ -159,7 +159,7 @@ class RegexChecker(BaseChecker):
 
     def check(self, response: str, latency_ms: float) -> CheckResult:
         """Check if response matches the regex pattern."""
-        from entropix.core.config import InvariantType
+        from flakestorm.core.config import InvariantType
 
         pattern = self.config.pattern or ".*"
 

@@ -4,7 +4,7 @@ Semantic Invariant Checkers
 Checks that use embeddings to verify semantic similarity
 between expected and actual responses.
 
-Requires the 'semantic' extra: pip install entropix[semantic]
+Requires the 'semantic' extra: pip install flakestorm[semantic]
 """
 
 from __future__ import annotations
@@ -12,10 +12,10 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from entropix.assertions.deterministic import BaseChecker, CheckResult
+from flakestorm.assertions.deterministic import BaseChecker, CheckResult
 
 if TYPE_CHECKING:
-    from entropix.core.config import InvariantConfig
+    from flakestorm.core.config import InvariantConfig
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ class LocalEmbedder:
             except ImportError:
                 raise ImportError(
                     "sentence-transformers is required for semantic checks. "
-                    "Install with: pip install entropix[semantic]"
+                    "Install with: pip install flakestorm[semantic]"
                 )
         return self._model
 
@@ -109,7 +109,7 @@ class SimilarityChecker(BaseChecker):
 
     def check(self, response: str, latency_ms: float) -> CheckResult:
         """Check semantic similarity to expected response."""
-        from entropix.core.config import InvariantType
+        from flakestorm.core.config import InvariantType
 
         expected = self.config.expected or ""
         threshold = self.config.threshold or 0.8

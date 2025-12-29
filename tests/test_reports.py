@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from entropix.mutations.types import Mutation, MutationType
+from flakestorm.mutations.types import Mutation, MutationType
 
 
 class TestCheckResult:
@@ -15,7 +15,7 @@ class TestCheckResult:
 
     def test_check_result_creation(self):
         """CheckResult can be created."""
-        from entropix.reports.models import CheckResult
+        from flakestorm.reports.models import CheckResult
 
         result = CheckResult(
             check_type="contains",
@@ -28,7 +28,7 @@ class TestCheckResult:
 
     def test_check_result_to_dict(self):
         """CheckResult converts to dict."""
-        from entropix.reports.models import CheckResult
+        from flakestorm.reports.models import CheckResult
 
         result = CheckResult(
             check_type="latency",
@@ -55,7 +55,7 @@ class TestMutationResult:
 
     def test_mutation_result_creation(self, sample_mutation):
         """MutationResult can be created."""
-        from entropix.reports.models import MutationResult
+        from flakestorm.reports.models import MutationResult
 
         result = MutationResult(
             original_prompt="What is the weather?",
@@ -70,7 +70,7 @@ class TestMutationResult:
 
     def test_mutation_result_with_checks(self, sample_mutation):
         """MutationResult with check results."""
-        from entropix.reports.models import CheckResult, MutationResult
+        from flakestorm.reports.models import CheckResult, MutationResult
 
         checks = [
             CheckResult(check_type="contains", passed=True, details="Found 'weather'"),
@@ -90,7 +90,7 @@ class TestMutationResult:
 
     def test_mutation_result_failed_checks(self, sample_mutation):
         """MutationResult returns failed checks."""
-        from entropix.reports.models import CheckResult, MutationResult
+        from flakestorm.reports.models import CheckResult, MutationResult
 
         checks = [
             CheckResult(check_type="contains", passed=True, details="OK"),
@@ -114,7 +114,7 @@ class TestTypeStatistics:
 
     def test_type_statistics_creation(self):
         """TypeStatistics can be created."""
-        from entropix.reports.models import TypeStatistics
+        from flakestorm.reports.models import TypeStatistics
 
         stats = TypeStatistics(
             mutation_type="paraphrase",
@@ -129,7 +129,7 @@ class TestTypeStatistics:
 
     def test_type_statistics_to_dict(self):
         """TypeStatistics converts to dict."""
-        from entropix.reports.models import TypeStatistics
+        from flakestorm.reports.models import TypeStatistics
 
         stats = TypeStatistics(
             mutation_type="noise",
@@ -147,7 +147,7 @@ class TestTestStatistics:
 
     def test_statistics_creation(self):
         """TestStatistics can be created."""
-        from entropix.reports.models import TestStatistics
+        from flakestorm.reports.models import TestStatistics
 
         stats = TestStatistics(
             total_mutations=100,
@@ -165,7 +165,7 @@ class TestTestStatistics:
 
     def test_statistics_pass_rate(self):
         """Statistics calculates pass_rate correctly."""
-        from entropix.reports.models import TestStatistics
+        from flakestorm.reports.models import TestStatistics
 
         stats = TestStatistics(
             total_mutations=100,
@@ -181,7 +181,7 @@ class TestTestStatistics:
 
     def test_statistics_zero_total(self):
         """Statistics handles zero total."""
-        from entropix.reports.models import TestStatistics
+        from flakestorm.reports.models import TestStatistics
 
         stats = TestStatistics(
             total_mutations=0,
@@ -202,13 +202,13 @@ class TestTestResults:
     @pytest.fixture
     def sample_config(self):
         """Create sample config."""
-        from entropix.core.config import (
+        from flakestorm.core.config import (
             AgentConfig,
             AgentType,
-            EntropixConfig,
+            FlakeStormConfig,
         )
 
-        return EntropixConfig(
+        return FlakeStormConfig(
             agent=AgentConfig(
                 endpoint="http://localhost:8000/chat",
                 type=AgentType.HTTP,
@@ -220,7 +220,7 @@ class TestTestResults:
     @pytest.fixture
     def sample_statistics(self):
         """Create sample statistics."""
-        from entropix.reports.models import TestStatistics
+        from flakestorm.reports.models import TestStatistics
 
         return TestStatistics(
             total_mutations=10,
@@ -235,7 +235,7 @@ class TestTestResults:
 
     def test_results_creation(self, sample_config, sample_statistics):
         """TestResults can be created."""
-        from entropix.reports.models import TestResults
+        from flakestorm.reports.models import TestResults
 
         now = datetime.now()
         results = TestResults(
@@ -255,13 +255,13 @@ class TestHTMLReportGenerator:
     @pytest.fixture
     def sample_config(self):
         """Create sample config."""
-        from entropix.core.config import (
+        from flakestorm.core.config import (
             AgentConfig,
             AgentType,
-            EntropixConfig,
+            FlakeStormConfig,
         )
 
-        return EntropixConfig(
+        return FlakeStormConfig(
             agent=AgentConfig(
                 endpoint="http://localhost:8000/chat",
                 type=AgentType.HTTP,
@@ -273,7 +273,7 @@ class TestHTMLReportGenerator:
     @pytest.fixture
     def sample_statistics(self):
         """Create sample statistics."""
-        from entropix.reports.models import TestStatistics
+        from flakestorm.reports.models import TestStatistics
 
         return TestStatistics(
             total_mutations=10,
@@ -289,7 +289,7 @@ class TestHTMLReportGenerator:
     @pytest.fixture
     def sample_results(self, sample_config, sample_statistics):
         """Create sample test results."""
-        from entropix.reports.models import TestResults
+        from flakestorm.reports.models import TestResults
 
         now = datetime.now()
         return TestResults(
@@ -302,14 +302,14 @@ class TestHTMLReportGenerator:
 
     def test_generator_creation(self, sample_results):
         """Generator can be created."""
-        from entropix.reports.html import HTMLReportGenerator
+        from flakestorm.reports.html import HTMLReportGenerator
 
         generator = HTMLReportGenerator(sample_results)
         assert generator is not None
 
     def test_generate_returns_string(self, sample_results):
         """Generator returns HTML string."""
-        from entropix.reports.html import HTMLReportGenerator
+        from flakestorm.reports.html import HTMLReportGenerator
 
         generator = HTMLReportGenerator(sample_results)
         html = generator.generate()
@@ -319,7 +319,7 @@ class TestHTMLReportGenerator:
 
     def test_generate_valid_html_structure(self, sample_results):
         """Generated HTML has valid structure."""
-        from entropix.reports.html import HTMLReportGenerator
+        from flakestorm.reports.html import HTMLReportGenerator
 
         generator = HTMLReportGenerator(sample_results)
         html = generator.generate()
@@ -329,7 +329,7 @@ class TestHTMLReportGenerator:
 
     def test_contains_robustness_score(self, sample_results):
         """Report contains robustness score."""
-        from entropix.reports.html import HTMLReportGenerator
+        from flakestorm.reports.html import HTMLReportGenerator
 
         generator = HTMLReportGenerator(sample_results)
         html = generator.generate()
@@ -339,7 +339,7 @@ class TestHTMLReportGenerator:
 
     def test_save_creates_file(self, sample_results):
         """save() creates file on disk."""
-        from entropix.reports.html import HTMLReportGenerator
+        from flakestorm.reports.html import HTMLReportGenerator
 
         with tempfile.TemporaryDirectory() as tmpdir:
             generator = HTMLReportGenerator(sample_results)
@@ -356,13 +356,13 @@ class TestJSONReportGenerator:
     @pytest.fixture
     def sample_config(self):
         """Create sample config."""
-        from entropix.core.config import (
+        from flakestorm.core.config import (
             AgentConfig,
             AgentType,
-            EntropixConfig,
+            FlakeStormConfig,
         )
 
-        return EntropixConfig(
+        return FlakeStormConfig(
             agent=AgentConfig(
                 endpoint="http://localhost:8000/chat",
                 type=AgentType.HTTP,
@@ -374,7 +374,7 @@ class TestJSONReportGenerator:
     @pytest.fixture
     def sample_statistics(self):
         """Create sample statistics."""
-        from entropix.reports.models import TestStatistics
+        from flakestorm.reports.models import TestStatistics
 
         return TestStatistics(
             total_mutations=10,
@@ -390,7 +390,7 @@ class TestJSONReportGenerator:
     @pytest.fixture
     def sample_results(self, sample_config, sample_statistics):
         """Create sample test results."""
-        from entropix.reports.models import TestResults
+        from flakestorm.reports.models import TestResults
 
         ts = datetime(2024, 1, 15, 12, 0, 0)
         return TestResults(
@@ -403,14 +403,14 @@ class TestJSONReportGenerator:
 
     def test_generator_creation(self, sample_results):
         """Generator can be created."""
-        from entropix.reports.json_export import JSONReportGenerator
+        from flakestorm.reports.json_export import JSONReportGenerator
 
         generator = JSONReportGenerator(sample_results)
         assert generator is not None
 
     def test_generate_valid_json(self, sample_results):
         """Generator produces valid JSON."""
-        from entropix.reports.json_export import JSONReportGenerator
+        from flakestorm.reports.json_export import JSONReportGenerator
 
         generator = JSONReportGenerator(sample_results)
         json_str = generator.generate()
@@ -421,7 +421,7 @@ class TestJSONReportGenerator:
 
     def test_contains_statistics(self, sample_results):
         """JSON contains statistics."""
-        from entropix.reports.json_export import JSONReportGenerator
+        from flakestorm.reports.json_export import JSONReportGenerator
 
         generator = JSONReportGenerator(sample_results)
         data = json.loads(generator.generate())
@@ -431,7 +431,7 @@ class TestJSONReportGenerator:
 
     def test_save_creates_file(self, sample_results):
         """save() creates JSON file on disk."""
-        from entropix.reports.json_export import JSONReportGenerator
+        from flakestorm.reports.json_export import JSONReportGenerator
 
         with tempfile.TemporaryDirectory() as tmpdir:
             generator = JSONReportGenerator(sample_results)
@@ -448,13 +448,13 @@ class TestTerminalReporter:
     @pytest.fixture
     def sample_config(self):
         """Create sample config."""
-        from entropix.core.config import (
+        from flakestorm.core.config import (
             AgentConfig,
             AgentType,
-            EntropixConfig,
+            FlakeStormConfig,
         )
 
-        return EntropixConfig(
+        return FlakeStormConfig(
             agent=AgentConfig(
                 endpoint="http://localhost:8000/chat",
                 type=AgentType.HTTP,
@@ -466,7 +466,7 @@ class TestTerminalReporter:
     @pytest.fixture
     def sample_statistics(self):
         """Create sample statistics."""
-        from entropix.reports.models import TestStatistics
+        from flakestorm.reports.models import TestStatistics
 
         return TestStatistics(
             total_mutations=10,
@@ -482,7 +482,7 @@ class TestTerminalReporter:
     @pytest.fixture
     def sample_results(self, sample_config, sample_statistics):
         """Create sample test results."""
-        from entropix.reports.models import TestResults
+        from flakestorm.reports.models import TestResults
 
         now = datetime.now()
         return TestResults(
@@ -495,14 +495,14 @@ class TestTerminalReporter:
 
     def test_reporter_creation(self, sample_results):
         """Reporter can be created."""
-        from entropix.reports.terminal import TerminalReporter
+        from flakestorm.reports.terminal import TerminalReporter
 
         reporter = TerminalReporter(sample_results)
         assert reporter is not None
 
     def test_reporter_has_print_methods(self, sample_results):
         """Reporter has print methods."""
-        from entropix.reports.terminal import TerminalReporter
+        from flakestorm.reports.terminal import TerminalReporter
 
         reporter = TerminalReporter(sample_results)
         assert hasattr(reporter, "print_summary")

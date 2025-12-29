@@ -1,5 +1,5 @@
 """
-Entropix Integrations Module
+flakestorm Integrations Module
 
 V2 features for integrating with external services:
 - HuggingFace model downloading
@@ -19,15 +19,15 @@ __all__ = [
 def __getattr__(name: str):
     """Lazy loading of integration modules."""
     if name == "HuggingFaceModelProvider":
-        from entropix.integrations.huggingface import HuggingFaceModelProvider
+        from flakestorm.integrations.huggingface import HuggingFaceModelProvider
 
         return HuggingFaceModelProvider
     elif name == "GitHubActionsIntegration":
-        from entropix.integrations.github_actions import GitHubActionsIntegration
+        from flakestorm.integrations.github_actions import GitHubActionsIntegration
 
         return GitHubActionsIntegration
     elif name == "LocalEmbedder":
-        from entropix.assertions.semantic import LocalEmbedder
+        from flakestorm.assertions.semantic import LocalEmbedder
 
         return LocalEmbedder
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

@@ -11,7 +11,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING
 
-from entropix.assertions.deterministic import BaseChecker, CheckResult
+from flakestorm.assertions.deterministic import BaseChecker, CheckResult
 
 if TYPE_CHECKING:
     pass
@@ -84,7 +84,7 @@ class ExcludesPIIChecker(BaseChecker):
 
     def check(self, response: str, latency_ms: float) -> CheckResult:
         """Check for PII patterns in response."""
-        from entropix.core.config import InvariantType
+        from flakestorm.core.config import InvariantType
 
         found_pii = []
 
@@ -125,7 +125,7 @@ class RefusalChecker(BaseChecker):
 
     def check(self, response: str, latency_ms: float) -> CheckResult:
         """Check for proper refusal of dangerous content."""
-        from entropix.core.config import InvariantType
+        from flakestorm.core.config import InvariantType
 
         response_lower = response.lower()
 

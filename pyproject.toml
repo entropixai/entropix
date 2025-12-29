@@ -3,14 +3,14 @@ requires = ["hatchling", "hatch-fancy-pypi-readme"]
 build-backend = "hatchling.build"
 
 [project]
-name = "entropix"
+name = "flakestorm"
 version = "0.1.0"
 description = "The Agent Reliability Engine - Chaos Engineering for AI Agents"
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.10"
 authors = [
-    { name = "Entropix Team" }
+    { name = "flakestorm Team" }
 ]
 keywords = [
     "ai",
@@ -66,20 +66,20 @@ huggingface = [
     "huggingface-hub>=0.19.0",
 ]
 all = [
-    "entropix[dev,semantic,huggingface]",
+    "flakestorm[dev,semantic,huggingface]",
 ]
 
 [project.scripts]
-entropix = "entropix.cli.main:app"
+flakestorm = "flakestorm.cli.main:app"
 
 [project.urls]
-Homepage = "https://github.com/entropix/entropix"
-Documentation = "https://entropix.dev/docs"
-Repository = "https://github.com/entropix/entropix"
-Issues = "https://github.com/entropix/entropix/issues"
+Homepage = "https://github.com/flakestorm/flakestorm"
+Documentation = "https://flakestorm.dev/docs"
+Repository = "https://github.com/flakestorm/flakestorm"
+Issues = "https://github.com/flakestorm/flakestorm/issues"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/entropix"]
+packages = ["src/flakestorm"]
 
 [tool.hatch.build.targets.sdist]
 include = [
@@ -115,7 +115,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["entropix"]
+known-first-party = ["flakestorm"]
 
 [tool.mypy]
 python_version = "3.10"
@@ -145,4 +145,4 @@ skips = ["B101"]  # Skip assert warnings (used in tests)
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
-addopts = "-v --cov=src/entropix --cov-report=term-missing"
+addopts = "-v --cov=src/flakestorm --cov-report=term-missing"

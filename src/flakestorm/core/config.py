@@ -1,7 +1,7 @@
 """
-Configuration Management for Entropix
+Configuration Management for flakestorm
 
-Handles loading and validating the entropix.yaml configuration file.
+Handles loading and validating the flakestorm.yaml configuration file.
 Uses Pydantic for robust validation and type safety.
 """
 
@@ -15,7 +15,7 @@ import yaml
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 # Import MutationType from mutations to avoid duplicate definition
-from entropix.mutations.types import MutationType
+from flakestorm.mutations.types import MutationType
 
 
 class AgentType(str, Enum):
@@ -73,7 +73,7 @@ class MutationConfig(BaseModel):
     - Maximum 50 total mutations per test run
     - 5 mutation types: paraphrase, noise, tone_shift, prompt_injection, custom
 
-    Upgrade to Entropix Cloud for unlimited mutations and advanced types.
+    Upgrade to flakestorm Cloud for unlimited mutations and advanced types.
     """
 
     count: int = Field(
@@ -194,8 +194,8 @@ class AdvancedConfig(BaseModel):
     )
 
 
-class EntropixConfig(BaseModel):
-    """Main configuration for Entropix."""
+class FlakeStormConfig(BaseModel):
+    """Main configuration for flakestorm."""
 
     version: str = Field(default="1.0", description="Configuration version")
     agent: AgentConfig = Field(..., description="Agent configuration")
@@ -219,7 +219,7 @@ class EntropixConfig(BaseModel):
     )
 
     @classmethod
-    def from_yaml(cls, content: str) -> EntropixConfig:
+    def from_yaml(cls, content: str) -> FlakeStormConfig:
         """Parse configuration from YAML string."""
         data = yaml.safe_load(content)
         return cls.model_validate(data)
@@ -230,15 +230,15 @@ class EntropixConfig(BaseModel):
         return yaml.dump(data, default_flow_style=False, sort_keys=False)
 
 
-def load_config(path: str | Path) -> EntropixConfig:
+def load_config(path: str | Path) -> FlakeStormConfig:
     """
-    Load and validate an Entropix configuration file.
+    Load and validate an flakestorm configuration file.
 
     Args:
-        path: Path to the entropix.yaml file
+        path: Path to the flakestorm.yaml file
 
     Returns:
-        Validated EntropixConfig object
+        Validated FlakeStormConfig object
 
     Raises:
         FileNotFoundError: If the config file doesn't exist
@@ -249,16 +249,16 @@ def load_config(path: str | Path) -> EntropixConfig:
     if not config_path.exists():
         raise FileNotFoundError(
             f"Configuration file not found: {config_path}\n"
-            "Run 'entropix init' to create a new configuration file."
+            "Run 'flakestorm init' to create a new configuration file."
         )
 
     content = config_path.read_text(encoding="utf-8")
-    return EntropixConfig.from_yaml(content)
+    return FlakeStormConfig.from_yaml(content)
 
 
-def create_default_config() -> EntropixConfig:
+def create_default_config() -> FlakeStormConfig:
     """Create a default configuration for initialization."""
-    return EntropixConfig(
+    return FlakeStormConfig(
         version="1.0",
         agent=AgentConfig(
             endpoint="http://localhost:8000/invoke",

@@ -13,11 +13,11 @@ from typing import TYPE_CHECKING
 
 from ollama import AsyncClient
 
-from entropix.mutations.templates import MutationTemplates
-from entropix.mutations.types import Mutation, MutationType
+from flakestorm.mutations.templates import MutationTemplates
+from flakestorm.mutations.types import Mutation, MutationType
 
 if TYPE_CHECKING:
-    from entropix.core.config import ModelConfig
+    from flakestorm.core.config import ModelConfig
 
 logger = logging.getLogger(__name__)
 

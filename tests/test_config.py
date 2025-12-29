@@ -7,10 +7,10 @@ from pathlib import Path
 
 import pytest
 
-from entropix.core.config import (
+from flakestorm.core.config import (
     AgentConfig,
     AgentType,
-    EntropixConfig,
+    FlakeStormConfig,
     InvariantConfig,
     InvariantType,
     MutationConfig,
@@ -20,8 +20,8 @@ from entropix.core.config import (
 )
 
 
-class TestEntropixConfig:
-    """Tests for EntropixConfig."""
+class TestFlakeStormConfig:
+    """Tests for FlakeStormConfig."""
 
     def test_create_default_config(self):
         """Test creating a default configuration."""
@@ -60,7 +60,7 @@ invariants:
   - type: "latency"
     max_ms: 1000
 """
-        config = EntropixConfig.from_yaml(yaml_content)
+        config = FlakeStormConfig.from_yaml(yaml_content)
 
         assert config.agent.endpoint == "http://localhost:8000/test"
         assert config.agent.timeout == 5000

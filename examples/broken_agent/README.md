@@ -1,6 +1,6 @@
 # Broken Agent Example
 
-This example demonstrates a deliberately fragile AI agent that Entropix can detect issues with.
+This example demonstrates a deliberately fragile AI agent that flakestorm can detect issues with.
 
 ## The "Broken" Agent
 
@@ -21,11 +21,11 @@ pip install fastapi uvicorn
 uvicorn agent:app --port 8000
 ```
 
-### 2. Run Entropix Against It
+### 2. Run flakestorm Against It
 
 ```bash
 # From the project root
-entropix run --config examples/broken_agent/entropix.yaml
+flakestorm run --config examples/broken_agent/flakestorm.yaml
 ```
 
 ### 3. See the Failures
@@ -44,4 +44,4 @@ Try modifying `agent.py` to:
 3. Handle emotional inputs gracefully
 4. Detect and refuse prompt injections
 
-Then re-run Entropix to see your robustness score improve!
+Then re-run flakestorm to see your robustness score improve!

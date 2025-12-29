@@ -24,7 +24,7 @@ class MutationType(str, Enum):
     - CUSTOM: User-defined mutation templates
 
     Advanced mutations (sophisticated prompt injections, jailbreaks)
-    are available in Entropix Cloud.
+    are available in flakestorm Cloud.
     """
 
     PARAPHRASE = "paraphrase"

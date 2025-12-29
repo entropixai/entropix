@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 # Try to import Rust bindings
 _RUST_AVAILABLE = False
 try:
-    import entropix_rust
+    import flakestorm_rust
 
     _RUST_AVAILABLE = True
     logger.debug("Rust performance module loaded successfully")
@@ -56,7 +56,7 @@ def calculate_robustness_score(
         Robustness score between 0.0 and 1.0
     """
     if _RUST_AVAILABLE:
-        return entropix_rust.calculate_robustness_score(
+        return flakestorm_rust.calculate_robustness_score(
             semantic_passed,
             deterministic_passed,
             total,
@@ -88,7 +88,7 @@ def calculate_weighted_score(results: Sequence[tuple[bool, float]]) -> float:
         Weighted robustness score between 0.0 and 1.0
     """
     if _RUST_AVAILABLE:
-        return entropix_rust.calculate_weighted_score(list(results))
+        return flakestorm_rust.calculate_weighted_score(list(results))
 
     # Pure Python fallback
     if not results:
@@ -115,7 +115,7 @@ def levenshtein_distance(s1: str, s2: str) -> int:
         Edit distance between the strings
     """
     if _RUST_AVAILABLE:
-        return entropix_rust.levenshtein_distance(s1, s2)
+        return flakestorm_rust.levenshtein_distance(s1, s2)
 
     # Pure Python fallback
     len1 = len(s1)
@@ -156,7 +156,7 @@ def string_similarity(s1: str, s2: str) -> float:
         Similarity score between 0.0 (completely different) and 1.0 (identical)
     """
     if _RUST_AVAILABLE:
-        return entropix_rust.string_similarity(s1, s2)
+        return flakestorm_rust.string_similarity(s1, s2)
 
     # Pure Python fallback
     distance = levenshtein_distance(s1, s2)
@@ -187,7 +187,7 @@ def parallel_process_mutations(
         List of (mutation, type, weight) tuples
     """
     if _RUST_AVAILABLE:
-        return entropix_rust.parallel_process_mutations(
+        return flakestorm_rust.parallel_process_mutations(
             mutations, mutation_types, weights
         )
 
@@ -353,7 +353,7 @@ def benchmark_levenshtein(iterations: int = 1000) -> dict:
         start = time.perf_counter()
         for _ in range(iterations):
             for s1, s2 in test_pairs:
-                entropix_rust.levenshtein_distance(s1, s2)
+                flakestorm_rust.levenshtein_distance(s1, s2)
         rust_time = time.perf_counter() - start
         result["rust_time_ms"] = rust_time * 1000
         result["speedup"] = python_time / rust_time if rust_time > 0 else 0

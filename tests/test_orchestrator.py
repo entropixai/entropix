@@ -1,4 +1,4 @@
-"""Tests for the Entropix orchestrator."""
+"""Tests for the flakestorm orchestrator."""
 
 from datetime import datetime
 from unittest.mock import MagicMock
@@ -11,7 +11,7 @@ class TestOrchestratorState:
 
     def test_initial_state(self):
         """State initializes correctly."""
-        from entropix.core.orchestrator import OrchestratorState
+        from flakestorm.core.orchestrator import OrchestratorState
 
         state = OrchestratorState()
         assert state.total_mutations == 0
@@ -20,7 +20,7 @@ class TestOrchestratorState:
 
     def test_state_started_at(self):
         """State records start time."""
-        from entropix.core.orchestrator import OrchestratorState
+        from flakestorm.core.orchestrator import OrchestratorState
 
         state = OrchestratorState()
         assert state.started_at is not None
@@ -28,7 +28,7 @@ class TestOrchestratorState:
 
     def test_state_updates(self):
         """State updates as tests run."""
-        from entropix.core.orchestrator import OrchestratorState
+        from flakestorm.core.orchestrator import OrchestratorState
 
         state = OrchestratorState()
         state.total_mutations = 10
@@ -38,7 +38,7 @@ class TestOrchestratorState:
 
     def test_state_duration_seconds(self):
         """State calculates duration."""
-        from entropix.core.orchestrator import OrchestratorState
+        from flakestorm.core.orchestrator import OrchestratorState
 
         state = OrchestratorState()
         duration = state.duration_seconds
@@ -47,7 +47,7 @@ class TestOrchestratorState:
 
     def test_state_progress_percentage(self):
         """State calculates progress percentage."""
-        from entropix.core.orchestrator import OrchestratorState
+        from flakestorm.core.orchestrator import OrchestratorState
 
         state = OrchestratorState()
         state.total_mutations = 100
@@ -61,15 +61,15 @@ class TestOrchestrator:
     @pytest.fixture
     def mock_config(self):
         """Create a minimal test config."""
-        from entropix.core.config import (
+        from flakestorm.core.config import (
             AgentConfig,
             AgentType,
-            EntropixConfig,
+            FlakeStormConfig,
             MutationConfig,
         )
-        from entropix.mutations.types import MutationType
+        from flakestorm.mutations.types import MutationType
 
-        return EntropixConfig(
+        return FlakeStormConfig(
             agent=AgentConfig(
                 endpoint="http://localhost:8000/chat",
                 type=AgentType.HTTP,
@@ -107,7 +107,7 @@ class TestOrchestrator:
         self, mock_config, mock_agent, mock_mutation_engine, mock_verifier
     ):
         """Orchestrator can be created with all required arguments."""
-        from entropix.core.orchestrator import Orchestrator
+        from flakestorm.core.orchestrator import Orchestrator
 
         orchestrator = Orchestrator(
             config=mock_config,
@@ -122,7 +122,7 @@ class TestOrchestrator:
         self, mock_config, mock_agent, mock_mutation_engine, mock_verifier
     ):
         """Orchestrator has run method."""
-        from entropix.core.orchestrator import Orchestrator
+        from flakestorm.core.orchestrator import Orchestrator
 
         orchestrator = Orchestrator(
             config=mock_config,
@@ -137,7 +137,7 @@ class TestOrchestrator:
         self, mock_config, mock_agent, mock_mutation_engine, mock_verifier
     ):
         """Orchestrator initializes state correctly."""
-        from entropix.core.orchestrator import Orchestrator
+        from flakestorm.core.orchestrator import Orchestrator
 
         orchestrator = Orchestrator(
             config=mock_config,
@@ -152,7 +152,7 @@ class TestOrchestrator:
         self, mock_config, mock_agent, mock_mutation_engine, mock_verifier
     ):
         """Orchestrator stores all components."""
-        from entropix.core.orchestrator import Orchestrator
+        from flakestorm.core.orchestrator import Orchestrator
 
         orchestrator = Orchestrator(
             config=mock_config,
@@ -170,7 +170,7 @@ class TestOrchestrator:
         """Orchestrator accepts optional console."""
         from rich.console import Console
 
-        from entropix.core.orchestrator import Orchestrator
+        from flakestorm.core.orchestrator import Orchestrator
 
         custom_console = Console()
         orchestrator = Orchestrator(
@@ -186,7 +186,7 @@ class TestOrchestrator:
         self, mock_config, mock_agent, mock_mutation_engine, mock_verifier
     ):
         """Orchestrator accepts show_progress flag."""
-        from entropix.core.orchestrator import Orchestrator
+        from flakestorm.core.orchestrator import Orchestrator
 
         orchestrator = Orchestrator(
             config=mock_config,
@@ -203,8 +203,8 @@ class TestMutationGeneration:
 
     def test_mutation_count_calculation(self):
         """Test mutation count is calculated correctly."""
-        from entropix.core.config import MutationConfig
-        from entropix.mutations.types import MutationType
+        from flakestorm.core.config import MutationConfig
+        from flakestorm.mutations.types import MutationType
 
         config = MutationConfig(
             count=10,
@@ -214,8 +214,8 @@ class TestMutationGeneration:
 
     def test_mutation_types_configuration(self):
         """Test mutation types are configured correctly."""
-        from entropix.core.config import MutationConfig
-        from entropix.mutations.types import MutationType
+        from flakestorm.core.config import MutationConfig
+        from flakestorm.mutations.types import MutationType
 
         config = MutationConfig(
             count=5,

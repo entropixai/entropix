@@ -1,12 +1,12 @@
 [package]
-name = "entropix_rust"
+name = "flakestorm_rust"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 authors.workspace = true
 
 [lib]
-name = "entropix_rust"
+name = "flakestorm_rust"
 crate-type = ["cdylib"]
 
 [dependencies]

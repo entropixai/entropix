@@ -1,4 +1,4 @@
-"""Shared test fixtures for Entropix tests."""
+"""Shared test fixtures for flakestorm tests."""
 
 import sys
 import tempfile
@@ -45,7 +45,7 @@ invariants:
 @pytest.fixture
 def config_file(temp_dir, sample_config_yaml):
     """Create a config file in temp directory."""
-    config_path = temp_dir / "entropix.yaml"
+    config_path = temp_dir / "flakestorm.yaml"
     config_path.write_text(sample_config_yaml)
     return config_path
 
@@ -73,6 +73,6 @@ invariants: []
 @pytest.fixture
 def minimal_config_file(temp_dir, minimal_config_yaml):
     """Create a minimal config file."""
-    config_path = temp_dir / "entropix.yaml"
+    config_path = temp_dir / "flakestorm.yaml"
     config_path.write_text(minimal_config_yaml)
     return config_path

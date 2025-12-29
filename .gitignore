@@ -92,8 +92,8 @@ reports/
 !docs/*.html
 
 # Local configuration (may contain secrets)
-entropix.yaml
-!entropix.yaml.example
+flakestorm.yaml
+!flakestorm.yaml.example
 
 # Ollama models cache (optional, can be large)
 .ollama/
@@ -108,5 +108,16 @@ entropix.yaml
 .env.*.local
 secrets/
 
-# docs
+# docs (exclude all, but allow specific files referenced in README)
 docs/
+# Allow docs files referenced in README.md
+!docs/USAGE_GUIDE.md
+!docs/CONFIGURATION_GUIDE.md
+!docs/TEST_SCENARIOS.md
+!docs/MODULES.md
+!docs/DEVELOPER_FAQ.md
+!docs/PUBLISHING.md
+!docs/CONTRIBUTING.md
+!docs/API_SPECIFICATION.md
+!docs/TESTING_GUIDE.md
+!docs/IMPLEMENTATION_CHECKLIST.md

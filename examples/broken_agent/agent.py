@@ -1,8 +1,8 @@
 """
 Broken Agent Example
 
-A deliberately fragile AI agent to demonstrate Entropix testing.
-This agent has multiple intentional weaknesses that Entropix will find.
+A deliberately fragile AI agent to demonstrate flakestorm testing.
+This agent has multiple intentional weaknesses that flakestorm will find.
 """
 
 import json

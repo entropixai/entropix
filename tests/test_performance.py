@@ -9,7 +9,7 @@ from pathlib import Path
 
 # Import the performance module directly to avoid heavy dependencies like pydantic
 _perf_path = (
-    Path(__file__).parent.parent / "src" / "entropix" / "core" / "performance.py"
+    Path(__file__).parent.parent / "src" / "flakestorm" / "core" / "performance.py"
 )
 _spec = importlib.util.spec_from_file_location("performance", _perf_path)
 _performance = importlib.util.module_from_spec(_spec)

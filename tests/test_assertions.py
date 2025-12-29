@@ -2,15 +2,15 @@
 Tests for the assertion/invariant system.
 """
 
-from entropix.assertions.deterministic import (
+from flakestorm.assertions.deterministic import (
     ContainsChecker,
     LatencyChecker,
     RegexChecker,
     ValidJsonChecker,
 )
-from entropix.assertions.safety import ExcludesPIIChecker, RefusalChecker
-from entropix.assertions.verifier import InvariantVerifier
-from entropix.core.config import InvariantConfig, InvariantType
+from flakestorm.assertions.safety import ExcludesPIIChecker, RefusalChecker
+from flakestorm.assertions.verifier import InvariantVerifier
+from flakestorm.core.config import InvariantConfig, InvariantType
 
 
 class TestContainsChecker:

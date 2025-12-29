@@ -1,13 +1,13 @@
-# Entropix Configuration File
+# flakestorm Configuration File
 # The Agent Reliability Engine - Chaos Engineering for AI Agents
 #
-# This file defines how Entropix tests your AI agent for reliability.
-# Copy this file to `entropix.yaml` and customize for your agent.
+# This file defines how flakestorm tests your AI agent for reliability.
+# Copy this file to `flakestorm.yaml` and customize for your agent.
 
 version: "1.0"
 
 # Agent Configuration
-# Define how Entropix connects to your agent
+# Define how flakestorm connects to your agent
 agent:
   # HTTP endpoint that accepts POST requests with {"input": "..."} body
   endpoint: "http://localhost:8000/invoke"
@@ -60,7 +60,7 @@ mutations:
 
 # Golden Prompts
 # Your "ideal" user inputs that the agent should handle correctly
-# Entropix will generate mutations of these and verify the agent still works
+# flakestorm will generate mutations of these and verify the agent still works
 golden_prompts:
   - "Book a flight to Paris for next Monday"
   - "What's my account balance?"
@@ -87,7 +87,7 @@ invariants:
   #   pattern: "^\\{.*\\}$"
   #   description: "Response must be a JSON object"
 
-  # Semantic Checks (requires 'semantic' extra: pip install entropix[semantic])
+  # Semantic Checks (requires 'semantic' extra: pip install flakestorm[semantic])
   # - type: "similarity"
   #   expected: "Your request has been processed successfully"
   #   threshold: 0.8
@@ -110,7 +110,7 @@ output:
   path: "./reports"
 
   # Optional: Custom report filename template
-  # filename_template: "entropix-{date}-{time}"
+  # filename_template: "flakestorm-{date}-{time}"
 
 # Advanced Configuration
 # advanced:

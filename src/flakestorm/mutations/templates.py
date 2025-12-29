@@ -7,7 +7,7 @@ different types of adversarial mutations.
 
 from __future__ import annotations
 
-from entropix.mutations.types import MutationType
+from flakestorm.mutations.types import MutationType
 
 # Prompt templates for each mutation type
 MUTATION_TEMPLATES: dict[MutationType, str] = {

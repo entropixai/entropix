@@ -1,7 +1,7 @@
 """
-Entropix Test Runner
+flakestorm Test Runner
 
-High-level interface for running Entropix tests. Combines all components
+High-level interface for running flakestorm tests. Combines all components
 and provides a simple API for executing reliability tests.
 """
 
@@ -12,34 +12,34 @@ from typing import TYPE_CHECKING
 
 from rich.console import Console
 
-from entropix.assertions.verifier import InvariantVerifier
-from entropix.core.config import EntropixConfig, load_config
-from entropix.core.orchestrator import Orchestrator
-from entropix.core.protocol import BaseAgentAdapter, create_agent_adapter
-from entropix.mutations.engine import MutationEngine
+from flakestorm.assertions.verifier import InvariantVerifier
+from flakestorm.core.config import FlakeStormConfig, load_config
+from flakestorm.core.orchestrator import Orchestrator
+from flakestorm.core.protocol import BaseAgentAdapter, create_agent_adapter
+from flakestorm.mutations.engine import MutationEngine
 
 if TYPE_CHECKING:
-    from entropix.reports.models import TestResults
+    from flakestorm.reports.models import TestResults
 
 
-class EntropixRunner:
+class FlakeStormRunner:
     """
-    Main runner for Entropix tests.
+    Main runner for flakestorm tests.
 
     Provides a high-level interface for running reliability tests
     against AI agents. Handles configuration loading, component
     initialization, and test execution.
 
     Example:
-        >>> config = load_config("entropix.yaml")
-        >>> runner = EntropixRunner(config)
+        >>> config = load_config("flakestorm.yaml")
+        >>> runner = FlakeStormRunner(config)
         >>> results = await runner.run()
         >>> print(f"Score: {results.statistics.robustness_score:.1%}")
     """
 
     def __init__(
         self,
-        config: EntropixConfig | str | Path,
+        config: FlakeStormConfig | str | Path,
         agent: BaseAgentAdapter | None = None,
         console: Console | None = None,
         show_progress: bool = True,

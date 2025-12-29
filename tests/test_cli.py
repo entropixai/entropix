@@ -5,7 +5,7 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-from entropix.cli.main import app
+from flakestorm.cli.main import app
 
 runner = CliRunner()
 
@@ -17,7 +17,7 @@ class TestHelpCommand:
         """Main help displays correctly."""
         result = runner.invoke(app, ["--help"])
         assert result.exit_code == 0
-        assert "run" in result.output.lower() or "entropix" in result.output.lower()
+        assert "run" in result.output.lower() or "flakestorm" in result.output.lower()
 
     def test_run_help(self):
         """Run command help displays options."""
@@ -37,11 +37,11 @@ class TestHelpCommand:
 
 
 class TestInitCommand:
-    """Tests for `entropix init`."""
+    """Tests for `flakestorm init`."""
 
     def test_init_creates_config(self):
-        """init creates entropix.yaml."""
-        with tempfile.TemporaryDirectory() as tmpdir:
+        """init creates flakestorm.yaml."""
+        with tempfile.TemporaryDirectory():
             # Change to temp directory context
             result = runner.invoke(app, ["init"], catch_exceptions=False)
 
@@ -55,12 +55,12 @@ class TestInitCommand:
 
 
 class TestVerifyCommand:
-    """Tests for `entropix verify`."""
+    """Tests for `flakestorm verify`."""
 
     def test_verify_valid_config(self):
         """verify accepts valid config."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            config_path = Path(tmpdir) / "entropix.yaml"
+            config_path = Path(tmpdir) / "flakestorm.yaml"
             config_path.write_text(
                 """
 agent:
@@ -96,7 +96,7 @@ invariants: []
     def test_verify_invalid_yaml(self):
         """verify rejects invalid YAML syntax."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            config_path = Path(tmpdir) / "entropix.yaml"
+            config_path = Path(tmpdir) / "flakestorm.yaml"
             config_path.write_text("invalid: yaml: : content")
 
             result = runner.invoke(app, ["verify", "--config", str(config_path)])
@@ -105,7 +105,7 @@ invariants: []
 
 
 class TestRunCommand:
-    """Tests for `entropix run`."""
+    """Tests for `flakestorm run`."""
 
     def test_run_missing_config(self):
         """run handles missing config."""
@@ -132,7 +132,7 @@ class TestRunCommand:
 
 
 class TestReportCommand:
-    """Tests for `entropix report`."""
+    """Tests for `flakestorm report`."""
 
     def test_report_help(self):
         """report command has help."""
@@ -141,7 +141,7 @@ class TestReportCommand:
 
 
 class TestScoreCommand:
-    """Tests for `entropix score`."""
+    """Tests for `flakestorm score`."""
 
     def test_score_help(self):
         """score command has help."""

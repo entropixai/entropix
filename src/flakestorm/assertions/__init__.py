@@ -1,22 +1,22 @@
 """
-Entropix Assertions (Invariants) System
+flakestorm Assertions (Invariants) System
 
 Provides verification of agent responses against defined invariants.
 Supports deterministic checks, semantic similarity, and safety validations.
 """
 
-from entropix.assertions.deterministic import (
+from flakestorm.assertions.deterministic import (
     ContainsChecker,
     LatencyChecker,
     RegexChecker,
     ValidJsonChecker,
 )
-from entropix.assertions.safety import (
+from flakestorm.assertions.safety import (
     ExcludesPIIChecker,
     RefusalChecker,
 )
-from entropix.assertions.semantic import SimilarityChecker
-from entropix.assertions.verifier import (
+from flakestorm.assertions.semantic import SimilarityChecker
+from flakestorm.assertions.verifier import (
     CheckResult,
     InvariantVerifier,
     VerificationResult,

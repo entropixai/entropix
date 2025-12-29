@@ -8,7 +8,7 @@ class TestHTTPAgentAdapter:
 
     def test_adapter_creation(self):
         """Test adapter can be created."""
-        from entropix.core.protocol import HTTPAgentAdapter
+        from flakestorm.core.protocol import HTTPAgentAdapter
 
         adapter = HTTPAgentAdapter(
             endpoint="http://localhost:8000/chat",
@@ -19,7 +19,7 @@ class TestHTTPAgentAdapter:
 
     def test_adapter_has_invoke_method(self):
         """Adapter has invoke method."""
-        from entropix.core.protocol import HTTPAgentAdapter
+        from flakestorm.core.protocol import HTTPAgentAdapter
 
         adapter = HTTPAgentAdapter(endpoint="http://localhost:8000/chat")
         assert hasattr(adapter, "invoke")
@@ -27,7 +27,7 @@ class TestHTTPAgentAdapter:
 
     def test_timeout_conversion(self):
         """Timeout is converted to seconds."""
-        from entropix.core.protocol import HTTPAgentAdapter
+        from flakestorm.core.protocol import HTTPAgentAdapter
 
         adapter = HTTPAgentAdapter(
             endpoint="http://localhost:8000/chat",
@@ -38,7 +38,7 @@ class TestHTTPAgentAdapter:
 
     def test_custom_headers(self):
         """Custom headers can be set."""
-        from entropix.core.protocol import HTTPAgentAdapter
+        from flakestorm.core.protocol import HTTPAgentAdapter
 
         headers = {"Authorization": "Bearer token123"}
         adapter = HTTPAgentAdapter(
@@ -53,7 +53,7 @@ class TestPythonAgentAdapter:
 
     def test_adapter_creation_with_callable(self):
         """Test adapter can be created with a callable."""
-        from entropix.core.protocol import PythonAgentAdapter
+        from flakestorm.core.protocol import PythonAgentAdapter
 
         def my_agent(input: str) -> str:
             return f"Response to: {input}"
@@ -64,7 +64,7 @@ class TestPythonAgentAdapter:
 
     def test_adapter_has_invoke_method(self):
         """Adapter has invoke method."""
-        from entropix.core.protocol import PythonAgentAdapter
+        from flakestorm.core.protocol import PythonAgentAdapter
 
         def my_agent(input: str) -> str:
             return f"Response to: {input}"
@@ -80,7 +80,7 @@ class TestLangChainAgentAdapter:
     @pytest.fixture
     def langchain_config(self):
         """Create a test LangChain agent config."""
-        from entropix.core.config import AgentConfig, AgentType
+        from flakestorm.core.config import AgentConfig, AgentType
 
         return AgentConfig(
             endpoint="my_agent:chain",
@@ -90,7 +90,7 @@ class TestLangChainAgentAdapter:
 
     def test_adapter_creation(self, langchain_config):
         """Test adapter can be created."""
-        from entropix.core.protocol import LangChainAgentAdapter
+        from flakestorm.core.protocol import LangChainAgentAdapter
 
         adapter = LangChainAgentAdapter(langchain_config)
         assert adapter is not None
@@ -101,8 +101,8 @@ class TestAgentAdapterFactory:
 
     def test_creates_http_adapter(self):
         """Factory creates HTTP adapter for HTTP type."""
-        from entropix.core.config import AgentConfig, AgentType
-        from entropix.core.protocol import HTTPAgentAdapter, create_agent_adapter
+        from flakestorm.core.config import AgentConfig, AgentType
+        from flakestorm.core.protocol import HTTPAgentAdapter, create_agent_adapter
 
         config = AgentConfig(
             endpoint="http://localhost:8000/chat",
@@ -113,7 +113,7 @@ class TestAgentAdapterFactory:
 
     def test_creates_python_adapter(self):
         """Python adapter can be created with a callable."""
-        from entropix.core.protocol import PythonAgentAdapter
+        from flakestorm.core.protocol import PythonAgentAdapter
 
         def my_agent(input: str) -> str:
             return f"Response: {input}"
@@ -123,8 +123,8 @@ class TestAgentAdapterFactory:
 
     def test_creates_langchain_adapter(self):
         """Factory creates LangChain adapter for LangChain type."""
-        from entropix.core.config import AgentConfig, AgentType
-        from entropix.core.protocol import LangChainAgentAdapter, create_agent_adapter
+        from flakestorm.core.config import AgentConfig, AgentType
+        from flakestorm.core.protocol import LangChainAgentAdapter, create_agent_adapter
 
         config = AgentConfig(
             endpoint="my_agent:chain",
@@ -139,7 +139,7 @@ class TestAgentResponse:
 
     def test_response_creation(self):
         """Test AgentResponse can be created."""
-        from entropix.core.protocol import AgentResponse
+        from flakestorm.core.protocol import AgentResponse
 
         response = AgentResponse(
             output="Hello, world!",
@@ -150,7 +150,7 @@ class TestAgentResponse:
 
     def test_response_with_error(self):
         """Test AgentResponse with error."""
-        from entropix.core.protocol import AgentResponse
+        from flakestorm.core.protocol import AgentResponse
 
         response = AgentResponse(
             output="",
@@ -162,7 +162,7 @@ class TestAgentResponse:
 
     def test_response_success_property(self):
         """Test AgentResponse success property."""
-        from entropix.core.protocol import AgentResponse
+        from flakestorm.core.protocol import AgentResponse
 
         # Success case
         success_response = AgentResponse(

@@ -1,3 +1,3 @@
 """
-Entropix Test Suite
+flakestorm Test Suite
 """

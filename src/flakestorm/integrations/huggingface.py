@@ -51,10 +51,10 @@ class HuggingFaceModelProvider:
 
         Args:
             models_dir: Directory to store downloaded models
-                       (default: ~/.entropix/models)
+                       (default: ~/.flakestorm/models)
         """
         if models_dir is None:
-            self.models_dir = Path.home() / ".entropix" / "models"
+            self.models_dir = Path.home() / ".flakestorm" / "models"
         else:
             self.models_dir = Path(models_dir)
 
@@ -82,7 +82,7 @@ class HuggingFaceModelProvider:
         except ImportError:
             raise ImportError(
                 "huggingface-hub is required for model downloading. "
-                "Install with: pip install entropix[huggingface]"
+                "Install with: pip install flakestorm[huggingface]"
             )
 
         # If no filename specified, find appropriate GGUF file
@@ -112,7 +112,7 @@ class HuggingFaceModelProvider:
 
     def list_available(self) -> list[dict]:
         """
-        List recommended models for Entropix.
+        List recommended models for flakestorm.
 
         Returns:
             List of model info dictionaries
@@ -236,11 +236,11 @@ SYSTEM You are a helpful assistant that generates text variations.
             >>> provider = HuggingFaceModelProvider()
             >>> name = provider.download_and_import(
             ...     "TheBloke/Mistral-7B-Instruct-v0.2-GGUF",
-            ...     model_name="entropix-attacker"
+            ...     model_name="flakestorm-attacker"
             ... )
-            >>> # Now use in entropix.yaml:
+            >>> # Now use in flakestorm.yaml:
             >>> # llm:
-            >>> #   model: "entropix-attacker"
+            >>> #   model: "flakestorm-attacker"
         """
         # Download the model
         model_path = self.download_model(

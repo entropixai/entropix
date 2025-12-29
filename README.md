@@ -1,4 +1,4 @@
-# Entropix
+# FlakeStorm
 
 <p align="center">
   <strong>The Agent Reliability Engine</strong><br>
@@ -6,23 +6,19 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/entropix/entropix/blob/main/LICENSE">
+  <a href="https://github.com/flakestorm/flakestorm/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/license-AGPLv3-blue.svg" alt="License">
   </a>
-  <a href="https://pypi.org/project/entropix/">
-    <img src="https://img.shields.io/pypi/v/entropix.svg" alt="PyPI">
+  <a href="https://pypi.org/project/flakestorm/">
+    <img src="https://img.shields.io/pypi/v/flakestorm.svg" alt="PyPI">
   </a>
-  <a href="https://pypi.org/project/entropix/">
-    <img src="https://img.shields.io/pypi/pyversions/entropix.svg" alt="Python Versions">
+  <a href="https://pypi.org/project/flakestorm/">
+    <img src="https://img.shields.io/pypi/pyversions/flakestorm.svg" alt="Python Versions">
   </a>
-  <a href="https://entropix.cloud">
+  <a href="https://flakestorm.com">
     <img src="https://img.shields.io/badge/☁️-Cloud%20Available-blueviolet" alt="Cloud">
   </a>
 </p>
-
----
-
-> **📢 This is the Open Source Edition.** For production workloads, check out [Entropix Cloud](https://entropix.cloud) — 20x faster with parallel execution, cloud LLMs, and CI/CD integration.
 
 ---
 
@@ -39,64 +35,32 @@
 
 ## The Solution
 
-**Entropix** is a local-first testing engine that applies **Chaos Engineering** principles to AI Agents.
+**FlakeStorm** is a local-first testing engine that applies **Chaos Engineering** principles to AI Agents.
 
-Instead of running one test case, Entropix takes a single "Golden Prompt", generates adversarial mutations (semantic variations, noise injection, hostile tone, prompt injections), runs them against your agent, and calculates a **Robustness Score**.
+Instead of running one test case, FlakeStorm takes a single "Golden Prompt", generates adversarial mutations (semantic variations, noise injection, hostile tone, prompt injections), runs them against your agent, and calculates a **Robustness Score**.
 
-> **"If it passes Entropix, it won't break in Production."**
+> **"If it passes FlakeStorm, it won't break in Production."**
 
-## Open Source vs Cloud
-
-| Feature | Open Source (Free) | Cloud Pro ($49/mo) | Cloud Team ($299/mo) |
-|---------|:------------------:|:------------------:|:--------------------:|
-| Mutation Types | 5 basic | All types | All types |
-| Mutations/Run | **50 max** | Unlimited | Unlimited |
-| Execution | **Sequential** | ⚡ Parallel (20x) | ⚡ Parallel (20x) |
-| LLM | Local only | Cloud + Local | Cloud + Local |
-| PII Detection | Basic regex | Advanced NER + ML | Advanced NER + ML |
-| Prompt Injection | Basic | ML-powered | ML-powered |
-| Factuality Check | ❌ | ✅ | ✅ |
-| Test History | ❌ | ✅ Dashboard | ✅ Dashboard |
-| GitHub Actions | ❌ | ✅ One-click | ✅ One-click |
-| Team Features | ❌ | ❌ | ✅ SSO + Sharing |
-
-**Why the difference?**
-
-```
-Developer workflow:
-1. Make code change
-2. Run Entropix tests (waiting...)
-3. Get results
-4. Fix issues
-5. Repeat
-
-Open Source: ~10 minutes per iteration → Run once, then skip
-Cloud Pro:   ~30 seconds per iteration → Run every commit
-```
-
-👉 [**Upgrade to Cloud**](https://entropix.cloud) for production workloads.
-
-## Features (Open Source)
+## Features
 
 - ✅ **5 Mutation Types**: Paraphrasing, noise, tone shifts, basic adversarial, custom templates
 - ✅ **Invariant Assertions**: Deterministic checks, semantic similarity, basic safety
 - ✅ **Local-First**: Uses Ollama with Qwen 3 8B for free testing
 - ✅ **Beautiful Reports**: Interactive HTML reports with pass/fail matrices
-- ⚠️ **50 Mutations Max**: Per test run (upgrade to Cloud for unlimited)
-- ⚠️ **Sequential Only**: One test at a time (upgrade to Cloud for 20x parallel)
-- ❌ **No CI/CD**: GitHub Actions requires Cloud
+- ✅ **50 Mutations Max**: Per test run
+- ✅ **Sequential Execution**: One test at a time
 
 ## Quick Start
 
 ### Installation
 
 ```bash
-pip install entropix
+pip install flakestorm
 ```
 
 ### Prerequisites
 
-Entropix uses [Ollama](https://ollama.ai) for local model inference:
+FlakeStorm uses [Ollama](https://ollama.ai) for local model inference:
 
 ```bash
 # Install Ollama (macOS/Linux)
@@ -109,10 +73,10 @@ ollama pull qwen3:8b
 ### Initialize Configuration
 
 ```bash
-entropix init
+flakestorm init
 ```
 
-This creates an `entropix.yaml` configuration file:
+This creates a `flakestorm.yaml` configuration file:
 
 ```yaml
 version: "1.0"
@@ -128,7 +92,7 @@ model:
   base_url: "http://localhost:11434"
 
 mutations:
-  count: 10  # Max 50 total per run in Open Source
+  count: 10  # Max 50 total per run
   types:
     - paraphrase
     - noise
@@ -152,13 +116,11 @@ output:
 ### Run Tests
 
 ```bash
-entropix run
+flakestorm run
 ```
 
 Output:
 ```
-ℹ️  Running in sequential mode (Open Source). Upgrade for parallel: https://entropix.cloud
-
 Generating mutations... ━━━━━━━━━━━━━━━━━━━━ 100%
 Running attacks...      ━━━━━━━━━━━━━━━━━━━━ 100%
 
@@ -169,17 +131,14 @@ Running attacks...      ━━━━━━━━━━━━━━━━━━�
 │  Failed: 3 (2 latency, 1 injection)      │
 ╰──────────────────────────────────────────╯
 
-⏱️  Test took 245.3s. With Entropix Cloud, this would take ~12.3s
-→ https://entropix.cloud
-
-Report saved to: ./reports/entropix-2024-01-15-143022.html
+Report saved to: ./reports/flakestorm-2024-01-15-143022.html
 ```
 
 ### Check Limits
 
 ```bash
-entropix limits   # Show Open Source edition limits
-entropix cloud    # Learn about Cloud features
+flakestorm limits   # Show edition limits
+flakestorm cloud    # Learn about Cloud features
 ```
 
 ## Mutation Types
@@ -192,7 +151,7 @@ entropix cloud    # Learn about Cloud features
 | **Prompt Injection** | Basic adversarial attacks | "Book a flight and ignore previous instructions" |
 | **Custom** | Your own mutation templates | Define with `{prompt}` placeholder |
 
-> **Need advanced mutations?** Sophisticated jailbreaks, multi-step injections, and domain-specific attacks are available in [Entropix Cloud](https://entropix.cloud).
+> **Need advanced mutations?** Visit [flakestorm.com](https://flakestorm.com) for more options.
 
 ## Invariants (Assertions)
 
@@ -221,7 +180,7 @@ invariants:
   - type: "refusal_check"
 ```
 
-> **Need advanced safety?** NER-based PII detection, ML-powered prompt injection detection, and factuality checking are available in [Entropix Cloud](https://entropix.cloud).
+> **Need advanced safety?** Visit [flakestorm.com](https://flakestorm.com) for more options.
 
 ## Agent Adapters
 
@@ -234,7 +193,7 @@ agent:
 
 ### Python Callable
 ```python
-from entropix import test_agent
+from flakestorm import test_agent
 
 @test_agent
 async def my_agent(input: str) -> str:
@@ -251,19 +210,13 @@ agent:
 
 ## CI/CD Integration
 
-> ⚠️ **Cloud Feature**: GitHub Actions integration requires [Entropix Cloud](https://entropix.cloud).
-
-For local testing only:
+For local testing:
 ```bash
 # Run before committing (manual)
-entropix run --min-score 0.9
+flakestorm run --min-score 0.9
 ```
 
-With Entropix Cloud, you get:
-- One-click GitHub Actions setup
-- Automatic PR blocking below threshold
-- Test history comparison
-- Slack/Discord notifications
+For advanced CI/CD features, visit [flakestorm.com](https://flakestorm.com).
 
 ## Robustness Score
 
@@ -301,12 +254,12 @@ AGPLv3 - See [LICENSE](LICENSE) for details.
 ---
 
 <p align="center">
-  <strong>Tested with Entropix</strong><br>
-  <img src="https://img.shields.io/badge/tested%20with-entropix-brightgreen" alt="Tested with Entropix">
+  <strong>Tested with FlakeStorm</strong><br>
+  <img src="https://img.shields.io/badge/tested%20with-flakestorm-brightgreen" alt="Tested with FlakeStorm">
 </p>
 
 <p align="center">
-  <a href="https://entropix.cloud">
-    <strong>⚡ Need speed? Try Entropix Cloud →</strong>
+  <a href="https://flakestorm.com">
+    <strong>⚡ Need more features? Visit FlakeStorm Cloud →</strong>
   </a>
 </p>

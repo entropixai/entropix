@@ -6,8 +6,8 @@ resolver = "2"
 version = "0.1.0"
 edition = "2021"
 license = "Apache-2.0"
-authors = ["Entropix Team"]
-repository = "https://github.com/entropix/entropix"
+authors = ["flakestorm Team"]
+repository = "https://github.com/flakestorm/flakestorm"
 
 [workspace.dependencies]
 pyo3 = { version = "0.20", features = ["extension-module"] }

@@ -1,4 +1,4 @@
-//! Entropix Rust Performance Module
+//! flakestorm Rust Performance Module
 //!
 //! This module provides high-performance implementations for:
 //! - Robustness score calculation
@@ -140,7 +140,7 @@ fn string_similarity(s1: &str, s2: &str) -> f64 {
 
 /// Python module definition
 #[pymodule]
-fn entropix_rust(_py: Python, m: &PyModule) -> PyResult<()> {
+fn flakestorm_rust(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(calculate_robustness_score, m)?)?;
     m.add_function(wrap_pyfunction!(calculate_weighted_score, m)?)?;
     m.add_function(wrap_pyfunction!(parallel_process_mutations, m)?)?;

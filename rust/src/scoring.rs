@@ -1,4 +1,4 @@
-//! Scoring algorithms for Entropix
+//! Scoring algorithms for flakestorm
 //!
 //! This module contains optimized scoring algorithms for calculating
 //! robustness metrics and aggregating test results.

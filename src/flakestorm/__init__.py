@@ -1,42 +1,42 @@
 """
-Entropix - The Agent Reliability Engine
+flakestorm - The Agent Reliability Engine
 
 Chaos Engineering for AI Agents. Apply adversarial fuzzing to prove
 your agents are production-ready before deployment.
 
 Example:
-    >>> from entropix import EntropixRunner, load_config
-    >>> config = load_config("entropix.yaml")
-    >>> runner = EntropixRunner(config)
+    >>> from flakestorm import flakestormRunner, load_config
+    >>> config = load_config("flakestorm.yaml")
+    >>> runner = FlakeStormRunner(config)
     >>> results = await runner.run()
     >>> print(f"Robustness Score: {results.robustness_score:.1%}")
 """
 
 __version__ = "0.1.0"
-__author__ = "Entropix Team"
+__author__ = "flakestorm Team"
 __license__ = "Apache-2.0"
 
-from entropix.assertions.verifier import InvariantVerifier, VerificationResult
-from entropix.core.config import (
+from flakestorm.assertions.verifier import InvariantVerifier, VerificationResult
+from flakestorm.core.config import (
     AgentConfig,
-    EntropixConfig,
+    FlakeStormConfig,
     InvariantConfig,
     ModelConfig,
     MutationConfig,
     OutputConfig,
     load_config,
 )
-from entropix.core.orchestrator import Orchestrator
-from entropix.core.protocol import (
+from flakestorm.core.orchestrator import Orchestrator
+from flakestorm.core.protocol import (
     AgentProtocol,
     HTTPAgentAdapter,
     PythonAgentAdapter,
     create_agent_adapter,
 )
-from entropix.core.runner import EntropixRunner
-from entropix.mutations.engine import MutationEngine
-from entropix.mutations.types import Mutation, MutationType
-from entropix.reports.models import TestResults, TestStatistics
+from flakestorm.core.runner import FlakeStormRunner
+from flakestorm.mutations.engine import MutationEngine
+from flakestorm.mutations.types import Mutation, MutationType
+from flakestorm.reports.models import TestResults, TestStatistics
 
 __all__ = [
     # Version info
@@ -44,7 +44,7 @@ __all__ = [
     "__author__",
     "__license__",
     # Configuration
-    "EntropixConfig",
+    "FlakeStormConfig",
     "load_config",
     "AgentConfig",
     "ModelConfig",
@@ -57,7 +57,7 @@ __all__ = [
     "PythonAgentAdapter",
     "create_agent_adapter",
     # Core
-    "EntropixRunner",
+    "FlakeStormRunner",
     "Orchestrator",
     # Mutations
     "MutationEngine",

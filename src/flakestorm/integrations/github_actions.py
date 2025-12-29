@@ -1,23 +1,23 @@
 """
 GitHub Actions Integration
 
-⚠️ CLOUD FEATURE: GitHub Actions integration is available in Entropix Cloud.
+⚠️ CLOUD FEATURE: GitHub Actions integration is available in flakestorm Cloud.
 The Open Source edition provides documentation only.
 
-Upgrade to Entropix Cloud for:
+Upgrade to flakestorm Cloud for:
 - One-click CI/CD integration
 - Block PRs based on reliability score
 - Automated test history tracking
 - Team notifications
 
-→ https://entropix.cloud
+→ https://flakestorm.cloud
 """
 
 from __future__ import annotations
 
 from pathlib import Path
 
-from entropix.core.limits import CLOUD_URL, GITHUB_ACTIONS_ENABLED
+from flakestorm.core.limits import CLOUD_URL, GITHUB_ACTIONS_ENABLED
 
 
 class GitHubActionsDisabledError(Exception):
@@ -25,18 +25,18 @@ class GitHubActionsDisabledError(Exception):
 
     def __init__(self):
         super().__init__(
-            "GitHub Actions integration is available in Entropix Cloud.\n"
+            "GitHub Actions integration is available in flakestorm Cloud.\n"
             f"Upgrade at: {CLOUD_URL}"
         )
 
 
 # GitHub Action YAML template (for reference/documentation)
-ACTION_YAML = """# ⚠️ CLOUD FEATURE: This requires Entropix Cloud
-# Upgrade at: https://entropix.cloud
+ACTION_YAML = """# ⚠️ CLOUD FEATURE: This requires flakestorm Cloud
+# Upgrade at: https://flakestorm.cloud
 
-name: 'Entropix Agent Test'
+name: 'flakestorm Agent Test'
 description: 'Run chaos testing on AI agents to verify reliability'
-author: 'Entropix'
+author: 'flakestorm'
 
 branding:
   icon: 'shield'
@@ -44,15 +44,15 @@ branding:
 
 inputs:
   config:
-    description: 'Path to entropix.yaml configuration file'
+    description: 'Path to flakestorm.yaml configuration file'
     required: false
-    default: 'entropix.yaml'
+    default: 'flakestorm.yaml'
   min_score:
     description: 'Minimum robustness score to pass (0.0-1.0)'
     required: false
     default: '0.9'
   api_key:
-    description: 'Entropix Cloud API key (required)'
+    description: 'flakestorm Cloud API key (required)'
     required: true
 
 outputs:
@@ -61,7 +61,7 @@ outputs:
   passed:
     description: 'Whether the test passed (true/false)'
   report_url:
-    description: 'URL to the full report on Entropix Cloud'
+    description: 'URL to the full report on flakestorm Cloud'
 
 runs:
   using: 'composite'
@@ -71,16 +71,16 @@ runs:
       with:
         python-version: '3.11'
 
-    - name: Install Entropix
+    - name: Install flakestorm
       shell: bash
-      run: pip install entropix
+      run: pip install flakestorm
 
     - name: Run Cloud Tests
       shell: bash
       env:
-        ENTROPIX_API_KEY: ${{ inputs.api_key }}
+        FLAKESTORM_API_KEY: ${{ inputs.api_key }}
       run: |
-        entropix cloud run \\
+        flakestorm cloud run \\
           --config ${{ inputs.config }} \\
           --min-score ${{ inputs.min_score }} \\
           --ci
@@ -88,9 +88,9 @@ runs:
 
 
 # Example workflow YAML
-WORKFLOW_EXAMPLE = """# Entropix Cloud CI/CD Integration
-# ⚠️ Requires Entropix Cloud subscription
-# Get started: https://entropix.cloud
+WORKFLOW_EXAMPLE = """# flakestorm Cloud CI/CD Integration
+# ⚠️ Requires flakestorm Cloud subscription
+# Get started: https://flakestorm.cloud
 
 name: Agent Reliability Check
 
@@ -107,12 +107,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run Entropix Cloud Tests
-        uses: entropix/entropix-action@v1
+      - name: Run flakestorm Cloud Tests
+        uses: flakestorm/flakestorm-action@v1
         with:
-          config: entropix.yaml
+          config: flakestorm.yaml
           min_score: '0.9'
-          api_key: ${{ secrets.ENTROPIX_API_KEY }}
+          api_key: ${{ secrets.FLAKESTORM_API_KEY }}
 """
 
 
@@ -120,19 +120,19 @@ class GitHubActionsIntegration:
     """
     Helper class for GitHub Actions integration.
 
-    ⚠️ NOTE: Full CI/CD integration requires Entropix Cloud.
+    ⚠️ NOTE: Full CI/CD integration requires flakestorm Cloud.
 
     The Open Source edition provides:
     - Documentation and examples
     - Local testing only
 
-    Entropix Cloud provides:
+    flakestorm Cloud provides:
     - One-click GitHub Actions setup
     - Block PRs based on reliability score
     - Test history and comparison
     - Slack/Discord notifications
 
-    Upgrade at: https://entropix.cloud
+    Upgrade at: https://flakestorm.cloud
     """
 
     @staticmethod
@@ -147,7 +147,7 @@ class GitHubActionsIntegration:
         Generate the GitHub Action definition YAML.
 
         Note: This returns documentation only in Open Source edition.
-        Full integration requires Entropix Cloud.
+        Full integration requires flakestorm Cloud.
 
         Returns:
             Action YAML content
@@ -157,9 +157,9 @@ class GitHubActionsIntegration:
     @staticmethod
     def generate_workflow_example() -> str:
         """
-        Generate an example workflow that uses Entropix.
+        Generate an example workflow that uses flakestorm.
 
-        Note: Requires Entropix Cloud for full functionality.
+        Note: Requires flakestorm Cloud for full functionality.
 
         Returns:
             Workflow YAML content
@@ -172,7 +172,7 @@ class GitHubActionsIntegration:
         Save the GitHub Action files to a directory.
 
         ⚠️ Cloud Feature: This creates documentation only.
-        For working CI/CD, upgrade to Entropix Cloud.
+        For working CI/CD, upgrade to flakestorm Cloud.
 
         Args:
             output_dir: Directory to save action files
@@ -189,9 +189,9 @@ class GitHubActionsIntegration:
         # Also create a README explaining Cloud requirement
         readme_path = output_dir / "README.md"
         readme_path.write_text(
-            f"""# Entropix GitHub Action
+            f"""# flakestorm GitHub Action
 
-⚠️ **Cloud Feature**: Full CI/CD integration requires Entropix Cloud.
+⚠️ **Cloud Feature**: Full CI/CD integration requires flakestorm Cloud.
 
 ## What You Get with Cloud
 
@@ -210,7 +210,7 @@ Get started at: {CLOUD_URL}
 For local-only testing, use the Open Source CLI:
 
 ```bash
-entropix run --config entropix.yaml
+flakestorm run --config flakestorm.yaml
 ```
 
 Note: Local runs are sequential and may be slow for large test suites.
@@ -240,13 +240,13 @@ Note: Local runs are sequential and may be slow for large test suites.
     @staticmethod
     def setup_ci(
         repo_path: Path,
-        config_path: str = "entropix.yaml",
+        config_path: str = "flakestorm.yaml",
         min_score: float = 0.9,
     ) -> None:
         """
         Set up CI/CD integration for a repository.
 
-        ⚠️ Cloud Feature: Requires Entropix Cloud subscription.
+        ⚠️ Cloud Feature: Requires flakestorm Cloud subscription.
 
         Raises:
             GitHubActionsDisabledError: Always in Open Source edition

@@ -10,7 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from entropix.assertions.deterministic import (
+from flakestorm.assertions.deterministic import (
     BaseChecker,
     CheckResult,
     ContainsChecker,
@@ -18,11 +18,11 @@ from entropix.assertions.deterministic import (
     RegexChecker,
     ValidJsonChecker,
 )
-from entropix.assertions.safety import ExcludesPIIChecker, RefusalChecker
-from entropix.assertions.semantic import SimilarityChecker
+from flakestorm.assertions.safety import ExcludesPIIChecker, RefusalChecker
+from flakestorm.assertions.semantic import SimilarityChecker
 
 if TYPE_CHECKING:
-    from entropix.core.config import InvariantConfig, InvariantType
+    from flakestorm.core.config import InvariantConfig, InvariantType
 
 
 # Registry of checker classes by invariant type

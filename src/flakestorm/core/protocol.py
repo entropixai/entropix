@@ -1,5 +1,5 @@
 """
-Agent Protocol and Adapters for Entropix
+Agent Protocol and Adapters for flakestorm
 
 Defines the interface that all agents must implement and provides
 built-in adapters for common agent types (HTTP, Python callable, LangChain).
@@ -17,7 +17,7 @@ from typing import Any, Protocol, runtime_checkable
 
 import httpx
 
-from entropix.core.config import AgentConfig, AgentType
+from flakestorm.core.config import AgentConfig, AgentType
 
 
 @dataclass
@@ -40,7 +40,7 @@ class AgentProtocol(Protocol):
     """
     Protocol defining the interface for AI agents.
 
-    All agents must implement this interface to be tested with Entropix.
+    All agents must implement this interface to be tested with flakestorm.
     The simplest implementation is an async function that takes a string
     input and returns a string output.
     """

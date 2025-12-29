@@ -4,8 +4,8 @@ Tests for the mutation engine.
 
 import pytest
 
-from entropix.mutations.templates import MutationTemplates
-from entropix.mutations.types import Mutation, MutationType
+from flakestorm.mutations.templates import MutationTemplates
+from flakestorm.mutations.types import Mutation, MutationType
 
 
 class TestMutationType:

@@ -1,5 +1,5 @@
 """
-Orchestrator for Entropix Test Runs
+Orchestrator for flakestorm Test Runs
 
 Coordinates the entire testing process: mutation generation,
 agent invocation, invariant verification, and result aggregation.
@@ -9,7 +9,7 @@ Open Source Edition:
 - Maximum 50 mutations per test run
 - Basic mutation types only
 
-Upgrade to Entropix Cloud for parallel execution and advanced features.
+Upgrade to flakestorm Cloud for parallel execution and advanced features.
 """
 
 from __future__ import annotations
@@ -29,7 +29,7 @@ from rich.progress import (
     TimeRemainingColumn,
 )
 
-from entropix.core.limits import (
+from flakestorm.core.limits import (
     MAX_MUTATIONS_PER_RUN,
     PARALLEL_EXECUTION_ENABLED,
     check_mutation_limit,
@@ -39,12 +39,12 @@ from entropix.core.limits import (
 )
 
 if TYPE_CHECKING:
-    from entropix.assertions.verifier import InvariantVerifier
-    from entropix.core.config import EntropixConfig
-    from entropix.core.protocol import BaseAgentAdapter
-    from entropix.mutations.engine import MutationEngine
-    from entropix.mutations.types import Mutation
-    from entropix.reports.models import MutationResult, TestResults, TestStatistics
+    from flakestorm.assertions.verifier import InvariantVerifier
+    from flakestorm.core.config import FlakeStormConfig
+    from flakestorm.core.protocol import BaseAgentAdapter
+    from flakestorm.mutations.engine import MutationEngine
+    from flakestorm.mutations.types import Mutation
+    from flakestorm.reports.models import MutationResult, TestResults, TestStatistics
 
 
 @dataclass
@@ -75,7 +75,7 @@ class OrchestratorState:
 
 class Orchestrator:
     """
-    Orchestrates the entire Entropix test run.
+    Orchestrates the entire flakestorm test run.
 
     Coordinates between:
     - MutationEngine: Generates adversarial inputs
@@ -86,7 +86,7 @@ class Orchestrator:
 
     def __init__(
         self,
-        config: EntropixConfig,
+        config: FlakeStormConfig,
         agent: BaseAgentAdapter,
         mutation_engine: MutationEngine,
         verifier: InvariantVerifier,
@@ -97,7 +97,7 @@ class Orchestrator:
         Initialize the orchestrator.
 
         Args:
-            config: Entropix configuration
+            config: flakestorm configuration
             agent: Agent adapter to test
             mutation_engine: Engine for generating mutations
             verifier: Invariant verification engine
@@ -121,7 +121,7 @@ class Orchestrator:
         Returns:
             TestResults containing all test outcomes
         """
-        from entropix.reports.models import (
+        from flakestorm.reports.models import (
             TestResults,
         )
 
@@ -310,7 +310,7 @@ class Orchestrator:
         semaphore: asyncio.Semaphore,
     ) -> MutationResult:
         """Run a single mutation against the agent."""
-        from entropix.reports.models import CheckResult, MutationResult
+        from flakestorm.reports.models import CheckResult, MutationResult
 
         async with semaphore:
             # Invoke agent
@@ -363,7 +363,7 @@ class Orchestrator:
         results: list[MutationResult],
     ) -> TestStatistics:
         """Calculate test statistics from results."""
-        from entropix.reports.models import TestStatistics, TypeStatistics
+        from flakestorm.reports.models import TestStatistics, TypeStatistics
 
         total = len(results)
         passed = sum(1 for r in results if r.passed)
