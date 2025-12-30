@@ -115,7 +115,19 @@ ollama run qwen2.5-coder:7b "Hello, world!"
 
 ### Step 3: Install flakestorm
 
+**Important:** On macOS (and some Linux distributions), Python environments are externally managed. You should use a virtual environment:
+
 ```bash
+# Create a virtual environment
+python3 -m venv venv
+
+# Activate it (macOS/Linux)
+source venv/bin/activate
+
+# Activate it (Windows)
+# venv\Scripts\activate
+
+# Now install flakestorm
 # From PyPI (when published)
 pip install flakestorm
 
@@ -125,12 +137,31 @@ cd flakestorm
 pip install -e ".[dev]"
 ```
 
+**Alternative: Using pipx (for CLI applications)**
+
+If you only want to use flakestorm as a CLI tool (not develop it), you can use `pipx`:
+
+```bash
+# Install pipx (if not already installed)
+brew install pipx  # macOS
+# Or: python3 -m pip install --user pipx
+
+# Install flakestorm
+pipx install flakestorm
+```
+
+**Note:** Make sure you're using Python 3.10+. You can verify with:
+```bash
+python3 --version  # Should be 3.10 or higher
+```
+
 ### Step 4: (Optional) Install Rust Extension
 
 For 80x+ performance improvement on scoring:
 
 ```bash
 cd rust
+# Make sure virtual environment is activated
 pip install maturin
 maturin build --release
 pip install ../target/wheels/*.whl

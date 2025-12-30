@@ -605,6 +605,11 @@ The mutation engine will generate attacks like:
 
 ```bash
 # In your agent project directory
+# Create virtual environment first
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Then install
 pip install flakestorm
 
 # Initialize configuration

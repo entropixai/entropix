@@ -23,6 +23,11 @@ This guide explains how to run, write, and expand tests for flakestorm. It cover
 
 ```bash
 # Install dev dependencies
+# Create virtual environment first
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Then install
 pip install -e ".[dev]"
 
 # Or manually

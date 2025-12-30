@@ -20,6 +20,11 @@ Please be respectful and constructive in all interactions. We welcome contributo
    ```bash
    python -m venv .venv
    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   # Create virtual environment first
+   python3 -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+   # Then install in editable mode
    pip install -e ".[dev]"
    ```
 

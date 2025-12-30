@@ -48,9 +48,24 @@ Instead of running one test case, Flakestorm takes a single "Golden Prompt", gen
 
 ### Installation
 
+**Using a virtual environment (recommended):**
+
 ```bash
+# Create and activate virtual environment
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install flakestorm
 pip install flakestorm
 ```
+
+**Or using pipx (for CLI use only):**
+
+```bash
+pipx install flakestorm
+```
+
+**Note:** Requires Python 3.10 or higher. On macOS, Python environments are externally managed, so using a virtual environment is required.
 
 ### Prerequisites
 
