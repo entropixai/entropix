@@ -1,9 +1,10 @@
 # =============================================================================
 # COMMERCIAL/PROPRIETARY CODE - DO NOT COMMIT TO PUBLIC REPO
 # =============================================================================
-# The cloud/ directory contains proprietary commercial code and must NEVER
+# The root-level cloud/ directory contains proprietary commercial code and must NEVER
 # be committed to the public open-source repository.
-cloud/
+# Note: src/flakestorm/cloud/ contains the CLI client code and should be tracked.
+/cloud/
 
 # =============================================================================
 # Python
@@ -124,3 +125,5 @@ docs/*
 !docs/API_SPECIFICATION.md
 !docs/TESTING_GUIDE.md
 !docs/IMPLEMENTATION_CHECKLIST.md
+flakestorm-cloud-backend/
+flakestorm-cloud-frontend/
