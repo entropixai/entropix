@@ -1,4 +1,4 @@
-# FlakeStorm
+# Flakestorm
 
 <p align="center">
   <strong>The Agent Reliability Engine</strong><br>
@@ -29,11 +29,11 @@
 
 ## The Solution
 
-**FlakeStorm** is a local-first testing engine that applies **Chaos Engineering** principles to AI Agents.
+**Flakestorm** is a local-first testing engine that applies **Chaos Engineering** principles to AI Agents.
 
-Instead of running one test case, FlakeStorm takes a single "Golden Prompt", generates adversarial mutations (semantic variations, noise injection, hostile tone, prompt injections), runs them against your agent, and calculates a **Robustness Score**.
+Instead of running one test case, Flakestorm takes a single "Golden Prompt", generates adversarial mutations (semantic variations, noise injection, hostile tone, prompt injections), runs them against your agent, and calculates a **Robustness Score**.
 
-> **"If it passes FlakeStorm, it won't break in Production."**
+> **"If it passes Flakestorm, it won't break in Production."**
 
 ## Features
 
@@ -54,7 +54,7 @@ pip install flakestorm
 
 ### Prerequisites
 
-FlakeStorm uses [Ollama](https://ollama.ai) for local model inference:
+Flakestorm uses [Ollama](https://ollama.ai) for local model inference:
 
 ```bash
 # Install Ollama (macOS/Linux)
@@ -239,6 +239,6 @@ AGPLv3 - See [LICENSE](LICENSE) for details.
 ---
 
 <p align="center">
-  <strong>Tested with FlakeStorm</strong><br>
-  <img src="https://img.shields.io/badge/tested%20with-flakestorm-brightgreen" alt="Tested with FlakeStorm">
+  <strong>Tested with Flakestorm</strong><br>
+  <img src="https://img.shields.io/badge/tested%20with-flakestorm-brightgreen" alt="Tested with Flakestorm">
 </p>
