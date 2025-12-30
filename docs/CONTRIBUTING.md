@@ -29,8 +29,27 @@ Please be respectful and constructive in all interactions. We welcome contributo
    ```
 
 3. **Install Ollama** (for mutation generation)
+
+   **macOS:**
    ```bash
-   curl -fsSL https://ollama.ai/install.sh | sh
+   # Option 1: Homebrew (recommended)
+   brew install ollama
+
+   # Option 2: Official installer
+   # Visit https://ollama.ai/download and download the .dmg file
+   ```
+
+   **Windows:**
+   - Visit https://ollama.com/download/windows
+   - Download and run `OllamaSetup.exe`
+
+   **Linux:**
+   ```bash
+   curl -fsSL https://ollama.com/install.sh | sh
+   ```
+
+   **Then pull the model:**
+   ```bash
    ollama pull qwen3:8b
    ```
 

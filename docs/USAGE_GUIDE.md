@@ -90,16 +90,78 @@ flakestorm is an **adversarial testing framework** for AI agents. It applies cha
 - **Ollama** (for local LLM mutation generation)
 - **Rust** (optional, for performance optimization)
 
-### Step 1: Install Ollama
+### Installation Order
+
+**Important:** Install Ollama first (it's a system-level service), then set up your Python virtual environment:
+
+1. **Install Ollama** (system-level, runs independently)
+2. **Create virtual environment** (for Python packages)
+3. **Install flakestorm** (Python package)
+4. **Start Ollama service** (if not already running)
+5. **Pull the model** (required for mutation generation)
+
+### Step 1: Install Ollama (System-Level)
+
+**macOS Installation:**
 
 ```bash
-# macOS
+# Option 1: Homebrew (recommended)
 brew install ollama
 
-# Linux
+# If you get permission errors, fix permissions first:
+sudo chown -R $(whoami) /Users/imac-frank/Library/Logs/Homebrew
+sudo chown -R $(whoami) /usr/local/Cellar
+sudo chown -R $(whoami) /usr/local/Homebrew
+brew install ollama
+
+# Option 2: Official Installer (if Homebrew doesn't work)
+# Visit https://ollama.ai/download and download the macOS installer
+# Double-click the .dmg file and follow the installation wizard
+```
+
+**Windows Installation:**
+
+1. **Download the Installer:**
+   - Visit https://ollama.com/download/windows
+   - Download `OllamaSetup.exe`
+
+2. **Run the Installer:**
+   - Double-click `OllamaSetup.exe`
+   - Follow the installation wizard
+   - Ollama will be installed and added to your PATH automatically
+
+3. **Verify Installation:**
+   ```powershell
+   ollama --version
+   ```
+
+**Linux Installation:**
+
+```bash
+# Install using the official script
 curl -fsSL https://ollama.com/install.sh | sh
 
-# Start Ollama service
+# Or using package managers:
+# Ubuntu/Debian
+sudo apt install ollama
+
+# Fedora/RHEL
+sudo dnf install ollama
+
+# Arch Linux
+sudo pacman -S ollama
+```
+
+**Start Ollama Service:**
+
+After installation, start Ollama:
+
+```bash
+# macOS/Linux - Start the service
+ollama serve
+
+# Windows - Ollama runs as a service automatically after installation
+# You can also start it manually from the Start menu or run:
 ollama serve
 ```
 
@@ -113,12 +175,12 @@ ollama pull qwen2.5-coder:7b
 ollama run qwen2.5-coder:7b "Hello, world!"
 ```
 
-### Step 3: Install flakestorm
+### Step 3: Create Virtual Environment and Install flakestorm
 
-**Important:** On macOS (and some Linux distributions), Python environments are externally managed. You should use a virtual environment:
+**Important:** On macOS (and some Linux distributions), Python environments are externally managed. You must use a virtual environment:
 
 ```bash
-# Create a virtual environment
+# Create a virtual environment (do this AFTER installing Ollama)
 python3 -m venv venv
 
 # Activate it (macOS/Linux)
@@ -136,6 +198,8 @@ git clone https://github.com/flakestorm/flakestorm.git
 cd flakestorm
 pip install -e ".[dev]"
 ```
+
+**Note:** Ollama is installed at the system level and doesn't need to be in your virtual environment. The virtual environment is only for Python packages (flakestorm and its dependencies).
 
 **Alternative: Using pipx (for CLI applications)**
 
@@ -757,6 +821,32 @@ agent:
 2. Identify patterns (e.g., all prompt_injection failing)
 3. Improve your agent's handling of those cases
 4. Re-run tests
+
+#### "Homebrew permission errors when installing Ollama"
+
+If you get `Operation not permitted` errors when running `brew install ollama`:
+
+```bash
+# Fix Homebrew permissions
+sudo chown -R $(whoami) /Users/imac-frank/Library/Logs/Homebrew
+sudo chown -R $(whoami) /usr/local/Cellar
+sudo chown -R $(whoami) /usr/local/Homebrew
+
+# Then try again
+brew install ollama
+
+# Or use the official installer from https://ollama.ai/download instead
+```
+
+#### "Ollama binary contains HTML or syntax errors"
+
+If you downloaded a file that contains HTML instead of the binary:
+
+1. **macOS:** Use Homebrew or download the official `.dmg` installer from https://ollama.ai/download
+2. **Windows:** Download `OllamaSetup.exe` from https://ollama.com/download/windows
+3. **Linux:** Use the official install script: `curl -fsSL https://ollama.com/install.sh | sh`
+
+Never download binaries directly via curl from the download page - always use the official installers or package managers.
 
 ### Debug Mode
 

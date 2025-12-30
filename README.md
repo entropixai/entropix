@@ -46,7 +46,61 @@ Instead of running one test case, Flakestorm takes a single "Golden Prompt", gen
 
 ## Quick Start
 
-### Installation
+### Installation Order
+
+1. **Install Ollama first** (system-level service)
+2. **Create virtual environment** (for Python packages)
+3. **Install flakestorm** (Python package)
+4. **Start Ollama and pull model** (required for mutations)
+
+### Step 1: Install Ollama (System-Level)
+
+FlakeStorm uses [Ollama](https://ollama.ai) for local model inference. Install this first:
+
+**macOS Installation:**
+
+```bash
+# Option 1: Homebrew (recommended)
+brew install ollama
+
+# If you get permission errors, fix permissions first:
+sudo chown -R $(whoami) /Users/imac-frank/Library/Logs/Homebrew
+sudo chown -R $(whoami) /usr/local/Cellar
+sudo chown -R $(whoami) /usr/local/Homebrew
+brew install ollama
+
+# Option 2: Official Installer
+# Visit https://ollama.ai/download and download the macOS installer (.dmg)
+```
+
+**Windows Installation:**
+
+1. Visit https://ollama.com/download/windows
+2. Download `OllamaSetup.exe`
+3. Run the installer and follow the wizard
+4. Ollama will be installed and start automatically
+
+**Linux Installation:**
+
+```bash
+# Using the official install script
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Or using package managers (Ubuntu/Debian example):
+sudo apt install ollama
+```
+
+**After installation, start Ollama and pull the model:**
+
+```bash
+# Start Ollama (macOS/Linux - Windows starts automatically)
+ollama serve
+
+# In another terminal, pull the model
+ollama pull qwen3:8b
+```
+
+### Step 2: Install flakestorm (Python Package)
 
 **Using a virtual environment (recommended):**
 
@@ -65,19 +119,7 @@ pip install flakestorm
 pipx install flakestorm
 ```
 
-**Note:** Requires Python 3.10 or higher. On macOS, Python environments are externally managed, so using a virtual environment is required.
-
-### Prerequisites
-
-Flakestorm uses [Ollama](https://ollama.ai) for local model inference:
-
-```bash
-# Install Ollama (macOS/Linux)
-curl -fsSL https://ollama.ai/install.sh | sh
-
-# Pull the default model
-ollama pull qwen3:8b
-```
+**Note:** Requires Python 3.10 or higher. On macOS, Python environments are externally managed, so using a virtual environment is required. Ollama runs independently and doesn't need to be in your virtual environment.
 
 ### Initialize Configuration
 
