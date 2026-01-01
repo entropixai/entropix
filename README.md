@@ -355,6 +355,7 @@ Where:
 - [⚙️ Configuration Guide](docs/CONFIGURATION_GUIDE.md) - All configuration options
 - [🔌 Connection Guide](docs/CONNECTION_GUIDE.md) - How to connect FlakeStorm to your agent
 - [🧪 Test Scenarios](docs/TEST_SCENARIOS.md) - Real-world examples with code
+- [🔗 Integrations Guide](docs/INTEGRATIONS_GUIDE.md) - HuggingFace models & semantic similarity
 
 ### For Developers
 - [🏗️ Architecture & Modules](docs/MODULES.md) - How the code works
