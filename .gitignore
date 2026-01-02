@@ -88,7 +88,7 @@ Cargo.lock
 !src/flakestorm/reports/
 
 # Local configuration (may contain secrets)
-flakestorm.yaml
+!flakestorm.yaml
 !flakestorm.yaml.example
 
 # Ollama models cache (optional, can be large)
