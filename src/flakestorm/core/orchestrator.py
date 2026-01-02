@@ -117,6 +117,14 @@ class Orchestrator:
         self.state = OrchestratorState()
         all_results: list[MutationResult] = []
 
+        # Phase 0: Pre-flight check - Validate agent with golden prompts
+        if not await self._validate_agent_with_golden_prompts():
+            # Agent validation failed, raise exception to stop execution
+            raise RuntimeError(
+                "Agent validation failed. Please fix agent errors (e.g., missing API keys, "
+                "configuration issues) before running mutations. See error messages above."
+            )
+
         # Phase 1: Generate all mutations
         all_mutations = await self._generate_mutations()
 
@@ -205,6 +213,78 @@ class Orchestrator:
                     all_mutations.append((prompt, mutation))
 
         return all_mutations
+
+    async def _validate_agent_with_golden_prompts(self) -> bool:
+        """
+        Pre-flight check: Validate that the agent works correctly with a golden prompt.
+
+        This prevents wasting time generating mutations for a broken agent.
+        Tests only the first golden prompt to quickly detect errors (e.g., missing API keys).
+
+        Returns:
+            True if the test prompt passes, False otherwise
+        """
+        from rich.panel import Panel
+
+        if not self.config.golden_prompts:
+            if self.show_progress:
+                self.console.print(
+                    "[yellow]⚠️  No golden prompts configured. Skipping pre-flight check.[/yellow]"
+                )
+            return True
+
+        # Test only the first golden prompt - if the agent is broken, it will fail on any prompt
+        test_prompt = self.config.golden_prompts[0]
+
+        if self.show_progress:
+            self.console.print()
+            self.console.print(
+                "[bold yellow]🔍 Pre-flight Check: Validating agent connection...[/bold yellow]"
+            )
+            self.console.print()
+
+        # Test the first golden prompt
+        if self.show_progress:
+            self.console.print("  Testing with first golden prompt...", style="dim")
+
+        response = await self.agent.invoke_with_timing(test_prompt)
+
+        if not response.success or response.error:
+            error_msg = response.error or "Unknown error"
+            prompt_preview = (
+                test_prompt[:50] + "..." if len(test_prompt) > 50 else test_prompt
+            )
+
+            if self.show_progress:
+                self.console.print()
+                self.console.print(
+                    Panel(
+                        f"[red]Agent validation failed![/red]\n\n"
+                        f"[yellow]Test prompt:[/yellow] {prompt_preview}\n"
+                        f"[yellow]Error:[/yellow] {error_msg}\n\n"
+                        f"[dim]Please fix the agent errors (e.g., missing API keys, configuration issues) "
+                        f"before running mutations. This prevents wasting time on a broken agent.[/dim]",
+                        title="[red]Pre-flight Check Failed[/red]",
+                        border_style="red",
+                    )
+                )
+            return False
+        else:
+            if self.show_progress:
+                self.console.print(
+                    f"  [green]✓[/green] Agent connection successful ({response.latency_ms:.0f}ms)"
+                )
+                self.console.print()
+                self.console.print(
+                    Panel(
+                        f"[green]✓ Agent is ready![/green]\n\n"
+                        f"[dim]Proceeding with mutation generation for {len(self.config.golden_prompts)} golden prompt(s)...[/dim]",
+                        title="[green]Pre-flight Check Passed[/green]",
+                        border_style="green",
+                    )
+                )
+                self.console.print()
+            return True
 
     async def _run_mutations(
         self,

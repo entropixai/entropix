@@ -141,27 +141,36 @@ def render_template(
         return rendered
 
 
-def extract_response(data: dict | list, path: str | None) -> str:
+def extract_response(data: dict | list | str, path: str | None) -> str:
     """
     Extract response from JSON using JSONPath or dot notation.
+
+    Handles various response formats:
+    - Direct values (string, number, array)
+    - Nested objects with various field names
+    - Arrays of objects
+    - Auto-detection when path is None
 
     Supports:
     - JSONPath: "$.data.result"
     - Dot notation: "data.result"
     - Simple key: "result"
+    - Array indices: "0" or "results.0"
 
     Args:
-        data: JSON data (dict or list)
-        path: JSONPath or dot notation path
+        data: JSON data (dict, list, or string)
+        path: JSONPath or dot notation path (None for auto-detection)
 
     Returns:
         Extracted response as string
     """
+    # Handle string responses directly
+    if isinstance(data, str):
+        return data
+
+    # Auto-detection when path is None
     if path is None:
-        # Fallback to default fields
-        if isinstance(data, dict):
-            return data.get("output") or data.get("response") or str(data)
-        return str(data)
+        return _auto_detect_response(data)
 
     # Remove leading $ if present (JSONPath style)
     path = path.lstrip("$.")
@@ -178,20 +187,164 @@ def extract_response(data: dict | list, path: str | None) -> str:
                 # Try to use key as index
                 try:
                     current = current[int(key)]
-                except (ValueError, IndexError):
-                    return str(data)
+                except (ValueError, IndexError, KeyError):
+                    # If key is not a valid index, try auto-detection
+                    return _auto_detect_response(data)
             else:
-                return str(data)
+                # Can't traverse further, try auto-detection
+                return _auto_detect_response(data)
 
             if current is None:
+                # Path found but value is None, try auto-detection
+                return _auto_detect_response(data)
+
+        # Successfully extracted value
+        if current is None:
+            return _auto_detect_response(data)
+
+        # Convert to string, handling various types
+        if isinstance(current, dict | list):
+            # For complex types, use JSON stringification for better representation
+            try:
+                return json.dumps(current, ensure_ascii=False)
+            except (TypeError, ValueError):
+                return str(current)
+        return str(current)
+
+    except (KeyError, TypeError, AttributeError, IndexError):
+        # Path not found, fall back to auto-detection
+        return _auto_detect_response(data)
+
+
+def _auto_detect_response(data: dict | list | str) -> str:
+    """
+    Automatically detect and extract the response from various data structures.
+
+    Tries multiple strategies to find the actual response content:
+    1. Common response field names
+    2. Single-item arrays
+    3. First meaningful value in dict/list
+    4. Direct string/number values
+
+    Args:
+        data: JSON data (dict, list, or string)
+
+    Returns:
+        Extracted response as string
+    """
+    # Already a string
+    if isinstance(data, str):
+        return data
+
+    # Dictionary: try common response field names
+    if isinstance(data, dict):
+        # Try common response field names (case-insensitive)
+        common_fields = [
+            "output",
+            "response",
+            "result",
+            "data",
+            "content",
+            "text",
+            "message",
+            "answer",
+            "reply",
+            "queries",
+            "query",
+            "results",
+        ]
+
+        # Case-sensitive first
+        for field in common_fields:
+            if field in data:
+                value = data[field]
+                if value is not None:
+                    return _format_extracted_value(value)
+
+        # Case-insensitive search
+        data_lower = {k.lower(): v for k, v in data.items()}
+        for field in common_fields:
+            if field in data_lower:
+                value = data_lower[field]
+                if value is not None:
+                    return _format_extracted_value(value)
+
+        # If dict has only one key, return that value
+        if len(data) == 1:
+            value = next(iter(data.values()))
+            if value is not None:
+                return _format_extracted_value(value)
+
+        # Last resort: stringify the dict
+        try:
+            return json.dumps(data, ensure_ascii=False)
+        except (TypeError, ValueError):
+            return str(data)
+
+    # List/Array: handle various cases
+    if isinstance(data, list):
+        # Empty list
+        if not data:
+            return "[]"
+
+        # Single item array - return that item
+        if len(data) == 1:
+            return _format_extracted_value(data[0])
+
+        # Array of strings/numbers - join or stringify
+        if all(isinstance(item, str | int | float | bool) for item in data):
+            try:
+                return json.dumps(data, ensure_ascii=False)
+            except (TypeError, ValueError):
                 return str(data)
 
-        return str(current) if current is not None else str(data)
-    except (KeyError, TypeError, AttributeError):
-        # Fallback to default extraction
-        if isinstance(data, dict):
-            return data.get("output") or data.get("response") or str(data)
-        return str(data)
+        # Array of objects - try to extract from first object
+        if len(data) > 0 and isinstance(data[0], dict):
+            # Recursively try to extract from first object
+            first_item = _auto_detect_response(data[0])
+            if first_item and first_item != "{}":
+                return first_item
+
+        # Last resort: stringify the array
+        try:
+            return json.dumps(data, ensure_ascii=False)
+        except (TypeError, ValueError):
+            return str(data)
+
+    # Primitive types (number, bool, None)
+    if data is None:
+        return ""
+    return str(data)
+
+
+def _format_extracted_value(value: Any) -> str:
+    """
+    Format an extracted value as a string.
+
+    Handles various types and structures intelligently.
+
+    Args:
+        value: The value to format
+
+    Returns:
+        Formatted string representation
+    """
+    if value is None:
+        return ""
+
+    if isinstance(value, str):
+        return value
+
+    if isinstance(value, int | float | bool):
+        return str(value)
+
+    if isinstance(value, dict | list):
+        try:
+            return json.dumps(value, ensure_ascii=False)
+        except (TypeError, ValueError):
+            return str(value)
+
+    return str(value)
 
 
 class BaseAgentAdapter(ABC):
@@ -326,10 +479,69 @@ class HTTPAgentAdapter(BaseAgentAdapter):
                     response.raise_for_status()
 
                     latency_ms = (time.perf_counter() - start_time) * 1000
-                    data = response.json()
+
+                    # Parse response - handle both JSON and non-JSON responses
+                    content_type = response.headers.get("content-type", "").lower()
+                    is_json = (
+                        "application/json" in content_type
+                        or "text/json" in content_type
+                    )
+
+                    if is_json:
+                        # Try to parse as JSON
+                        try:
+                            data = response.json()
+                        except Exception:
+                            # If JSON parsing fails, treat as text
+                            data = response.text
+                    else:
+                        # Non-JSON response (plain text, HTML, etc.)
+                        data = response.text
+                        # extract_response can handle string data, so continue processing
+
+                    # Check if response contains an error field (even if HTTP 200)
+                    # Some agents return HTTP 200 with error in JSON body
+                    if isinstance(data, dict):
+                        # Check for error fields first (before trying to extract success path)
+                        if "error" in data or "Error" in data:
+                            error_msg = (
+                                data.get("error")
+                                or data.get("Error")
+                                or data.get("message")
+                                or "Unknown error"
+                            )
+                            return AgentResponse(
+                                output="",
+                                latency_ms=latency_ms,
+                                error=f"Agent error: {error_msg}",
+                                raw_response=data,
+                            )
+                        # Check for common error patterns
+                        if "success" in data and data.get("success") is False:
+                            error_msg = (
+                                data.get("message")
+                                or data.get("error")
+                                or "Request failed"
+                            )
+                            return AgentResponse(
+                                output="",
+                                latency_ms=latency_ms,
+                                error=f"Agent returned failure: {error_msg}",
+                                raw_response=data,
+                            )
 
                     # 4. Extract response using response_path
-                    output = extract_response(data, self.response_path)
+                    # Only extract if we didn't find an error above
+                    try:
+                        output = extract_response(data, self.response_path)
+                    except Exception as extract_error:
+                        # If extraction fails, return the raw data as string
+                        return AgentResponse(
+                            output=str(data),
+                            latency_ms=latency_ms,
+                            error=f"Failed to extract response using path '{self.response_path}': {str(extract_error)}",
+                            raw_response=data,
+                        )
 
                     return AgentResponse(
                         output=output,

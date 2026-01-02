@@ -134,17 +134,28 @@ __all__ = ["load_config", "FlakeStormConfig", "FlakeStormRunner", "__version__"]
 
 ```bash
 # Check pyproject.toml is valid
-python -m pip install .
+# NOTE: Use editable mode for development, regular install for testing wheel builds
+pip install -e .  # Editable mode (recommended for development)
+
+# OR test the wheel build process:
+python -m pip install build
+python -m build --wheel
+python -m pip install dist/*.whl
 
 # Verify the package works
 flakestorm --version
 ```
 
+**Important:** If you get `ModuleNotFoundError: No module named 'flakestorm.reports'` when using `pip install .` (non-editable), it means the wheel build didn't include all subpackages. Use `pip install -e .` for development, or ensure `pyproject.toml` has the correct `packages` configuration.
+
 ### Step 2: Build the Package
 
 ```bash
+# Install build tools (if not already installed)
+pip install build
+
 # Clean previous builds
-rm -rf dist/ build/ *.egg-info
+rm -rf dist/ build/ *.egg-info src/*.egg-info
 
 # Build source distribution and wheel
 python -m build
@@ -153,22 +164,33 @@ python -m build
 # dist/
 #   flakestorm-0.1.0.tar.gz      (source)
 #   flakestorm-0.1.0-py3-none-any.whl  (wheel)
+
+# Verify all subpackages are included (especially reports)
+unzip -l dist/*.whl | grep "flakestorm/reports"
 ```
 
 ### Step 3: Check the Build
 
 ```bash
+# Install twine for checking (if not already installed)
+pip install twine
+
 # Verify the package contents
 twine check dist/*
 
 # List files in the wheel
 unzip -l dist/*.whl
 
-# Ensure it contains:
+# Ensure it contains all subpackages:
 # - flakestorm/__init__.py
 # - flakestorm/core/*.py
 # - flakestorm/mutations/*.py
+# - flakestorm/reports/*.py  (important: check this exists!)
+# - flakestorm/assertions/*.py
 # - etc.
+
+# Quick check for reports module:
+unzip -l dist/*.whl | grep "flakestorm/reports"
 ```
 
 ### Step 4: Test on Test PyPI (Recommended)

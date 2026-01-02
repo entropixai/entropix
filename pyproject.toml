@@ -79,6 +79,8 @@ Repository = "https://github.com/flakestorm/flakestorm"
 Issues = "https://github.com/flakestorm/flakestorm/issues"
 
 [tool.hatch.build.targets.wheel]
+# Hatchling should auto-discover all subpackages when you specify the parent
+# However, if pip install . fails but pip install -e . works, use editable mode for development
 packages = ["src/flakestorm"]
 
 [tool.hatch.build.targets.sdist]
