@@ -80,10 +80,12 @@ Cargo.lock
 # =============================================================================
 # Project-specific
 # =============================================================================
-# Generated reports
-reports/
+# Generated reports (root only, not src/flakestorm/reports/)
+/reports/
 *.html
 !docs/*.html
+# Explicitly include source code reports module
+!src/flakestorm/reports/
 
 # Local configuration (may contain secrets)
 flakestorm.yaml
