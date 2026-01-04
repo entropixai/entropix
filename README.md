@@ -97,7 +97,7 @@ Want to see Flakestorm in action immediately? Here's the fastest path:
 
 That's it! You'll get a robustness score and detailed report showing how your agent handles adversarial inputs.
 
-> **Note**: For full local execution (including mutation generation), you'll need Ollama installed. See the [Local Execution](#local-execution-advanced--power-users) section below or the [Usage Guide](docs/USAGE_GUIDE.md) for complete setup instructions.
+> **Note**: For full local execution (including mutation generation), you'll need Ollama installed. See the [Usage Guide](docs/USAGE_GUIDE.md) for complete setup instructions.
 
 ## How Flakestorm Works
 
@@ -125,12 +125,6 @@ The result: You know exactly how your agent will behave under stress before user
 - ✅ **Invariant Assertions**: Deterministic checks, semantic similarity, basic safety
 - ✅ **Local-First**: Uses Ollama with Qwen 3 8B for free testing
 - ✅ **Beautiful Reports**: Interactive HTML reports with pass/fail matrices
-
-## Local Execution (Advanced / Power Users)
-
-For full local execution with mutation generation, you'll need to set up Ollama and configure your Python environment. This section covers the complete setup process for users who want to run everything locally without external dependencies.
-
-> **Quick Setup**: For detailed installation instructions, troubleshooting, and configuration options, see the [Usage Guide](docs/USAGE_GUIDE.md). The guide includes step-by-step instructions for Ollama installation, Python environment setup, model selection, and advanced configuration.
 
 ## Toward a Zero-Setup Path
 
