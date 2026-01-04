@@ -35,12 +35,17 @@ Instead of running one test case, Flakestorm takes a single "Golden Prompt", gen
 
 > **"If it passes Flakestorm, it won't break in Production."**
 
-## Features
+## What You Get in Minutes
 
-- ✅ **8 Core Mutation Types**: Comprehensive robustness testing covering semantic, input, security, and edge cases
-- ✅ **Invariant Assertions**: Deterministic checks, semantic similarity, basic safety
-- ✅ **Local-First**: Uses Ollama with Qwen 3 8B for free testing
-- ✅ **Beautiful Reports**: Interactive HTML reports with pass/fail matrices
+Within minutes of setup, Flakestorm gives you:
+
+- **Robustness Score**: A single number (0.0-1.0) that quantifies your agent's reliability
+- **Failure Analysis**: Detailed reports showing exactly which mutations broke your agent and why
+- **Security Insights**: Discover prompt injection vulnerabilities before attackers do
+- **Edge Case Discovery**: Find boundary conditions that would cause production failures
+- **Actionable Reports**: Interactive HTML reports with specific recommendations for improvement
+
+No more guessing if your agent is production-ready. Flakestorm tells you exactly what will break and how to fix it.
 
 ## Demo
 
@@ -64,150 +69,79 @@ Instead of running one test case, Flakestorm takes a single "Golden Prompt", gen
 
 *Interactive HTML reports with detailed failure analysis and recommendations*
 
-## Quick Start
+## Try Flakestorm in ~60 Seconds
 
-### Installation Order
+Want to see Flakestorm in action immediately? Here's the fastest path:
 
-1. **Install Ollama first** (system-level service)
-2. **Create virtual environment** (for Python packages)
-3. **Install flakestorm** (Python package)
-4. **Start Ollama and pull model** (required for mutations)
+1. **Install flakestorm** (if you have Python 3.10+):
+   ```bash
+   pip install flakestorm
+   ```
 
-### Step 1: Install Ollama (System-Level)
+2. **Initialize a test configuration**:
+   ```bash
+   flakestorm init
+   ```
 
-FlakeStorm uses [Ollama](https://ollama.ai) for local model inference. Install this first:
+3. **Point it at your agent** (edit `flakestorm.yaml`):
+   ```yaml
+   agent:
+     endpoint: "http://localhost:8000/invoke"  # Your agent's endpoint
+     type: "http"
+   ```
 
-**macOS Installation:**
+4. **Run your first test**:
+   ```bash
+   flakestorm run
+   ```
 
-```bash
-# Option 1: Homebrew (recommended)
-brew install ollama
+That's it! You'll get a robustness score and detailed report showing how your agent handles adversarial inputs.
 
-# If you get permission errors, fix permissions first:
-sudo chown -R $(whoami) /Users/imac-frank/Library/Logs/Homebrew
-sudo chown -R $(whoami) /usr/local/Cellar
-sudo chown -R $(whoami) /usr/local/Homebrew
-brew install ollama
+> **Note**: For full local execution (including mutation generation), you'll need Ollama installed. See the [Local Execution](#local-execution-advanced--power-users) section below or the [Usage Guide](docs/USAGE_GUIDE.md) for complete setup instructions.
 
-# Option 2: Official Installer
-# Visit https://ollama.ai/download and download the macOS installer (.dmg)
-```
+## How Flakestorm Works
 
-**Windows Installation:**
+Flakestorm follows a simple but powerful workflow:
 
-1. Visit https://ollama.com/download/windows
-2. Download `OllamaSetup.exe`
-3. Run the installer and follow the wizard
-4. Ollama will be installed and start automatically
+1. **You provide "Golden Prompts"** — example inputs that should always work correctly
+2. **Flakestorm generates mutations** — using a local LLM, it creates adversarial variations:
+   - Paraphrases (same meaning, different words)
+   - Typos and noise (realistic user errors)
+   - Tone shifts (frustrated, urgent, aggressive users)
+   - Prompt injections (security attacks)
+   - Encoding attacks (Base64, URL encoding)
+   - Context manipulation (noisy, verbose inputs)
+   - Length extremes (empty, very long inputs)
+3. **Your agent processes each mutation** — Flakestorm sends them to your agent endpoint
+4. **Invariants are checked** — responses are validated against rules you define (latency, content, safety)
+5. **Robustness Score is calculated** — weighted by mutation difficulty and importance
+6. **Report is generated** — interactive HTML showing what passed, what failed, and why
 
-**Linux Installation:**
+The result: You know exactly how your agent will behave under stress before users ever see it.
 
-```bash
-# Using the official install script
-curl -fsSL https://ollama.com/install.sh | sh
+## Features
 
-# Or using package managers (Ubuntu/Debian example):
-sudo apt install ollama
-```
+- ✅ **8 Core Mutation Types**: Comprehensive robustness testing covering semantic, input, security, and edge cases
+- ✅ **Invariant Assertions**: Deterministic checks, semantic similarity, basic safety
+- ✅ **Local-First**: Uses Ollama with Qwen 3 8B for free testing
+- ✅ **Beautiful Reports**: Interactive HTML reports with pass/fail matrices
 
-**After installation, start Ollama and pull the model:**
+## Local Execution (Advanced / Power Users)
 
-```bash
-# Start Ollama
-# macOS (Homebrew): brew services start ollama
-# macOS (Manual) / Linux: ollama serve
-# Windows: Starts automatically as a service
+For full local execution with mutation generation, you'll need to set up Ollama and configure your Python environment. This section covers the complete setup process for users who want to run everything locally without external dependencies.
 
-# In another terminal, pull the model
-# Choose based on your RAM:
-# - 8GB RAM: ollama pull tinyllama:1.1b or gemma2:2b
-# - 16GB RAM: ollama pull qwen2.5:3b (recommended)
-# - 32GB+ RAM: ollama pull qwen2.5-coder:7b (best quality)
-ollama pull qwen2.5:3b
-```
+> **Quick Setup**: For detailed installation instructions, troubleshooting, and configuration options, see the [Usage Guide](docs/USAGE_GUIDE.md). The guide includes step-by-step instructions for Ollama installation, Python environment setup, model selection, and advanced configuration.
 
-**Troubleshooting:** If you get `syntax error: <!doctype html>` or `command not found` when running `ollama` commands:
+### Installation Overview
 
-```bash
-# 1. Remove the bad binary
-sudo rm /usr/local/bin/ollama
+The complete local setup requires:
 
-# 2. Find Homebrew's Ollama location
-brew --prefix ollama  # Shows /usr/local/opt/ollama or /opt/homebrew/opt/ollama
+1. **Ollama** (system-level service for local LLM inference)
+2. **Python 3.10+** (with virtual environment)
+3. **flakestorm** (Python package)
+4. **Model** (pulled via Ollama for mutation generation)
 
-# 3. Create symlink to make it available
-# Intel Mac:
-sudo ln -s /usr/local/opt/ollama/bin/ollama /usr/local/bin/ollama
-
-# Apple Silicon:
-sudo ln -s /opt/homebrew/opt/ollama/bin/ollama /opt/homebrew/bin/ollama
-echo 'export PATH="/opt/homebrew/bin:$PATH"' >> ~/.zshrc
-source ~/.zshrc
-
-# 4. Verify and use
-which ollama
-brew services start ollama
-ollama pull qwen3:8b
-```
-
-### Step 2: Install flakestorm (Python Package)
-
-**Using a virtual environment (recommended):**
-
-```bash
-# 1. Check if Python 3.11 is installed
-python3.11 --version  # Should work if installed via Homebrew
-
-# If not installed:
-# macOS: brew install python@3.11
-# Linux: sudo apt install python3.11 (Ubuntu/Debian)
-
-# 2. DEACTIVATE any existing venv first (if active)
-deactivate  # Run this if you see (venv) in your prompt
-
-# 3. Remove old venv if it exists (created with Python 3.9)
-rm -rf venv
-
-# 4. Create venv with Python 3.11 EXPLICITLY
-python3.11 -m venv venv
-# Or use full path: /usr/local/bin/python3.11 -m venv venv
-
-# 5. Activate it
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# 6. CRITICAL: Verify Python version in venv (MUST be 3.11.x, NOT 3.9.x)
-python --version  # Should show 3.11.x
-which python  # Should point to venv/bin/python
-
-# 7. If it still shows 3.9.x, the venv creation failed - remove and recreate:
-# deactivate && rm -rf venv && python3.11 -m venv venv && source venv/bin/activate
-
-# 8. Upgrade pip (required for pyproject.toml support)
-pip install --upgrade pip
-
-# 9. Install flakestorm
-pip install flakestorm
-
-# 10. (Optional) Install Rust extension for 80x+ performance boost
-pip install flakestorm_rust
-```
-
-**Note:** The Rust extension (`flakestorm_rust`) is completely optional. flakestorm works perfectly fine without it, but installing it provides 80x+ performance improvements for scoring operations. It's available on PyPI and automatically installs the correct wheel for your platform.
-
-**Troubleshooting:** If you get `Package requires a different Python: 3.9.6 not in '>=3.10'`:
-- Your venv is still using Python 3.9 even though Python 3.11 is installed
-- **Solution:** `deactivate && rm -rf venv && python3.11 -m venv venv && source venv/bin/activate && python --version`
-- Always verify with `python --version` after activating venv - it MUST show 3.10+
-
-**Or using pipx (for CLI use only):**
-
-```bash
-pipx install flakestorm
-# Optional: Install Rust extension for performance
-pipx inject flakestorm flakestorm_rust
-```
-
-**Note:** Requires Python 3.10 or higher. On macOS, Python environments are externally managed, so using a virtual environment is required. Ollama runs independently and doesn't need to be in your virtual environment. The Rust extension (`flakestorm_rust`) is optional but recommended for better performance.
+For detailed installation steps, platform-specific instructions, troubleshooting, and model recommendations, see the [Usage Guide - Installation section](docs/USAGE_GUIDE.md#installation).
 
 ### Initialize Configuration
 
@@ -278,6 +212,18 @@ Running attacks...      ━━━━━━━━━━━━━━━━━━�
 Report saved to: ./reports/flakestorm-2024-01-15-143022.html
 ```
 
+## Toward a Zero-Setup Path
+
+We're working on making Flakestorm even easier to use. Future improvements include:
+
+- **Cloud-hosted mutation generation**: No need to install Ollama locally
+- **One-command setup**: Automated installation and configuration
+- **Docker containers**: Pre-configured environments for instant testing
+- **CI/CD integrations**: Native GitHub Actions, GitLab CI, and more
+
+The goal: Test your agent's robustness with a single command, no local dependencies required.
+
+For now, the local execution path gives you full control and privacy. As we build toward zero-setup, you'll always have the option to run everything locally.
 
 ## Mutation Types
 
@@ -299,7 +245,7 @@ flakestorm provides 8 core mutation types that test different aspects of agent r
 The 8 mutation types work together to provide comprehensive robustness testing:
 
 - **Semantic Robustness**: Paraphrase, Context Manipulation
-- **Input Robustness**: Noise, Encoding Attacks, Length Extremes  
+- **Input Robustness**: Noise, Encoding Attacks, Length Extremes
 - **Security**: Prompt Injection, Encoding Attacks
 - **User Experience**: Tone Shift, Noise, Context Manipulation
 
