@@ -97,7 +97,7 @@ Want to see Flakestorm in action immediately? Here's the fastest path:
 
 That's it! You'll get a robustness score and detailed report showing how your agent handles adversarial inputs.
 
-> **Note**: For full local execution (including mutation generation), you'll need Ollama installed. See the [Local Execution](#local-execution-advanced--power-users) section below or the [Usage Guide](docs/USAGE_GUIDE.md) for complete setup instructions.
+> **Note**: For full local execution (including mutation generation), you'll need Ollama installed. See the [Usage Guide](docs/USAGE_GUIDE.md) for complete setup instructions.
 
 ## How Flakestorm Works
 
