@@ -107,7 +107,12 @@ class MutationConfig(BaseModel):
 
     Limits:
     - Maximum 50 total mutations per test run
-    - 8 mutation types: paraphrase, noise, tone_shift, prompt_injection, encoding_attacks, context_manipulation, length_extremes, custom
+    - 22+ mutation types available covering prompt-level and system/network-level attacks
+
+    Mutation types include:
+    - Original 8: paraphrase, noise, tone_shift, prompt_injection, encoding_attacks, context_manipulation, length_extremes, custom
+    - Advanced prompt-level (7): multi_turn_attack, advanced_jailbreak, semantic_similarity_attack, format_poisoning, language_mixing, token_manipulation, temporal_attack
+    - System/Network-level (8+): http_header_injection, payload_size_attack, content_type_confusion, query_parameter_poisoning, request_method_attack, protocol_level_attack, resource_exhaustion, concurrent_request_pattern, timeout_manipulation
 
     """
 
@@ -127,10 +132,11 @@ class MutationConfig(BaseModel):
             MutationType.CONTEXT_MANIPULATION,
             MutationType.LENGTH_EXTREMES,
         ],
-        description="Types of mutations to generate (8 types available)",
+        description="Types of mutations to generate (22+ types available)",
     )
     weights: dict[MutationType, float] = Field(
         default_factory=lambda: {
+            # Original 8 types
             MutationType.PARAPHRASE: 1.0,
             MutationType.NOISE: 0.8,
             MutationType.TONE_SHIFT: 0.9,
@@ -139,6 +145,24 @@ class MutationConfig(BaseModel):
             MutationType.CONTEXT_MANIPULATION: 1.1,
             MutationType.LENGTH_EXTREMES: 1.2,
             MutationType.CUSTOM: 1.0,
+            # Advanced prompt-level attacks
+            MutationType.MULTI_TURN_ATTACK: 1.4,
+            MutationType.ADVANCED_JAILBREAK: 2.0,
+            MutationType.SEMANTIC_SIMILARITY_ATTACK: 1.3,
+            MutationType.FORMAT_POISONING: 1.6,
+            MutationType.LANGUAGE_MIXING: 1.2,
+            MutationType.TOKEN_MANIPULATION: 1.5,
+            MutationType.TEMPORAL_ATTACK: 1.1,
+            # System/Network-level attacks
+            MutationType.HTTP_HEADER_INJECTION: 1.7,
+            MutationType.PAYLOAD_SIZE_ATTACK: 1.4,
+            MutationType.CONTENT_TYPE_CONFUSION: 1.5,
+            MutationType.QUERY_PARAMETER_POISONING: 1.6,
+            MutationType.REQUEST_METHOD_ATTACK: 1.3,
+            MutationType.PROTOCOL_LEVEL_ATTACK: 1.8,
+            MutationType.RESOURCE_EXHAUSTION: 1.5,
+            MutationType.CONCURRENT_REQUEST_PATTERN: 1.4,
+            MutationType.TIMEOUT_MANIPULATION: 1.3,
         },
         description="Scoring weights for each mutation type",
     )

@@ -159,14 +159,35 @@ adapter = create_agent_adapter(config.agent)
 ```python
 from flakestorm import MutationType
 
+# Original 8 types
 MutationType.PARAPHRASE            # Semantic rewrites
 MutationType.NOISE                 # Typos and errors
 MutationType.TONE_SHIFT            # Aggressive tone
-MutationType.PROMPT_INJECTION      # Adversarial attacks
+MutationType.PROMPT_INJECTION      # Basic adversarial attacks
 MutationType.ENCODING_ATTACKS      # Encoded inputs (Base64, Unicode, URL)
 MutationType.CONTEXT_MANIPULATION  # Context manipulation
 MutationType.LENGTH_EXTREMES       # Edge cases (empty/long inputs)
 MutationType.CUSTOM                # User-defined templates
+
+# Advanced prompt-level attacks (7 new types)
+MutationType.MULTI_TURN_ATTACK     # Context persistence and conversation state
+MutationType.ADVANCED_JAILBREAK    # Advanced prompt injection (DAN, role-playing)
+MutationType.SEMANTIC_SIMILARITY_ATTACK  # Adversarial examples
+MutationType.FORMAT_POISONING      # Structured data injection (JSON, XML)
+MutationType.LANGUAGE_MIXING       # Multilingual, code-switching, emoji
+MutationType.TOKEN_MANIPULATION    # Tokenizer edge cases, special tokens
+MutationType.TEMPORAL_ATTACK       # Time-sensitive context, impossible dates
+
+# System/Network-level attacks (8+ new types)
+MutationType.HTTP_HEADER_INJECTION # HTTP header manipulation
+MutationType.PAYLOAD_SIZE_ATTACK   # Extremely large payloads, DoS
+MutationType.CONTENT_TYPE_CONFUSION # MIME type manipulation
+MutationType.QUERY_PARAMETER_POISONING # Malicious query parameters
+MutationType.REQUEST_METHOD_ATTACK  # HTTP method confusion
+MutationType.PROTOCOL_LEVEL_ATTACK  # Protocol-level exploits
+MutationType.RESOURCE_EXHAUSTION    # CPU/memory exhaustion, DoS
+MutationType.CONCURRENT_REQUEST_PATTERN # Race conditions, concurrent state
+MutationType.TIMEOUT_MANIPULATION   # Timeout handling, slow requests
 
 # Properties
 MutationType.PARAPHRASE.display_name    # "Paraphrase"
@@ -174,26 +195,50 @@ MutationType.PARAPHRASE.default_weight  # 1.0
 MutationType.PARAPHRASE.description     # "Rewrite using..."
 ```
 
-**Mutation Types Overview:**
+**Mutation Types Overview (22+ types):**
+
+#### Prompt-Level Attacks
 
 | Type | Description | Default Weight | When to Use |
 |------|-------------|----------------|-------------|
 | `PARAPHRASE` | Semantically equivalent rewrites | 1.0 | Test semantic understanding |
 | `NOISE` | Typos and spelling errors | 0.8 | Test input robustness |
 | `TONE_SHIFT` | Aggressive/impatient phrasing | 0.9 | Test emotional resilience |
-| `PROMPT_INJECTION` | Adversarial attack attempts | 1.5 | Test security |
+| `PROMPT_INJECTION` | Basic adversarial attack attempts | 1.5 | Test security |
 | `ENCODING_ATTACKS` | Base64, Unicode, URL encoding | 1.3 | Test parser robustness and security |
 | `CONTEXT_MANIPULATION` | Adding/removing/reordering context | 1.1 | Test context extraction |
 | `LENGTH_EXTREMES` | Empty, minimal, or very long inputs | 1.2 | Test boundary conditions |
+| `MULTI_TURN_ATTACK` | Context persistence and conversation state | 1.4 | Test conversational agents |
+| `ADVANCED_JAILBREAK` | Advanced prompt injection (DAN, role-playing) | 2.0 | Test advanced security |
+| `SEMANTIC_SIMILARITY_ATTACK` | Adversarial examples - similar but different | 1.3 | Test robustness |
+| `FORMAT_POISONING` | Structured data injection (JSON, XML, markdown) | 1.6 | Test structured data parsing |
+| `LANGUAGE_MIXING` | Multilingual, code-switching, emoji | 1.2 | Test internationalization |
+| `TOKEN_MANIPULATION` | Tokenizer edge cases, special tokens | 1.5 | Test LLM tokenization |
+| `TEMPORAL_ATTACK` | Time-sensitive context, impossible dates | 1.1 | Test temporal reasoning |
 | `CUSTOM` | User-defined mutation templates | 1.0 | Test domain-specific scenarios |
+
+#### System/Network-Level Attacks
+
+| Type | Description | Default Weight | When to Use |
+|------|-------------|----------------|-------------|
+| `HTTP_HEADER_INJECTION` | HTTP header manipulation attacks | 1.7 | Test HTTP API security |
+| `PAYLOAD_SIZE_ATTACK` | Extremely large payloads, DoS | 1.4 | Test resource limits |
+| `CONTENT_TYPE_CONFUSION` | MIME type manipulation | 1.5 | Test HTTP parsers |
+| `QUERY_PARAMETER_POISONING` | Malicious query parameters | 1.6 | Test GET-based APIs |
+| `REQUEST_METHOD_ATTACK` | HTTP method confusion | 1.3 | Test REST APIs |
+| `PROTOCOL_LEVEL_ATTACK` | Protocol-level exploits (request smuggling) | 1.8 | Test protocol handling |
+| `RESOURCE_EXHAUSTION` | CPU/memory exhaustion, DoS | 1.5 | Test production resilience |
+| `CONCURRENT_REQUEST_PATTERN` | Race conditions, concurrent state | 1.4 | Test high-traffic agents |
+| `TIMEOUT_MANIPULATION` | Timeout handling, slow requests | 1.3 | Test timeout resilience |
 
 **Mutation Strategy:**
 
 Choose mutation types based on your testing goals:
-- **Comprehensive**: Use all 8 types for complete coverage
-- **Security-focused**: Emphasize `PROMPT_INJECTION`, `ENCODING_ATTACKS`
-- **UX-focused**: Emphasize `NOISE`, `TONE_SHIFT`, `CONTEXT_MANIPULATION`
-- **Edge case testing**: Emphasize `LENGTH_EXTREMES`, `ENCODING_ATTACKS`
+- **Comprehensive**: Use all 22+ types for complete coverage
+- **Security-focused**: Emphasize `PROMPT_INJECTION`, `ADVANCED_JAILBREAK`, `PROTOCOL_LEVEL_ATTACK`, `HTTP_HEADER_INJECTION`
+- **UX-focused**: Emphasize `NOISE`, `TONE_SHIFT`, `CONTEXT_MANIPULATION`, `LANGUAGE_MIXING`
+- **Infrastructure-focused**: Emphasize all system/network-level types
+- **Edge case testing**: Emphasize `LENGTH_EXTREMES`, `ENCODING_ATTACKS`, `TOKEN_MANIPULATION`, `RESOURCE_EXHAUSTION`
 
 #### Mutation
 

@@ -16,17 +16,13 @@ class MutationType(str, Enum):
     """
     Types of adversarial mutations.
 
-    Includes 8 mutation types:
-    - PARAPHRASE: Semantic rewrites
-    - NOISE: Typos and spelling errors
-    - TONE_SHIFT: Tone changes
-    - PROMPT_INJECTION: Basic adversarial attacks
-    - ENCODING_ATTACKS: Encoded inputs (Base64, Unicode, URL encoding)
-    - CONTEXT_MANIPULATION: Context handling (adding/removing context, reordering)
-    - LENGTH_EXTREMES: Edge cases (empty inputs, very long inputs, token limits)
-    - CUSTOM: User-defined mutation templates
+    Includes 22+ mutation types covering:
+    - Prompt-level attacks: semantic, noise, tone, injection, encoding, context, length, custom
+    - Advanced prompt attacks: multi-turn, advanced jailbreaks, semantic similarity, format poisoning, language mixing, token manipulation, temporal
+    - System/Network-level attacks: HTTP headers, payload size, content-type, query params, request methods, protocol-level, resource exhaustion, concurrent patterns, timeout manipulation
     """
 
+    # Original 8 types
     PARAPHRASE = "paraphrase"
     """Semantically equivalent rewrites that preserve intent."""
 
@@ -51,6 +47,56 @@ class MutationType(str, Enum):
     CUSTOM = "custom"
     """User-defined mutation templates for domain-specific testing."""
 
+    # Advanced prompt-level attacks (7 new types)
+    MULTI_TURN_ATTACK = "multi_turn_attack"
+    """Context persistence and conversation state management attacks."""
+
+    ADVANCED_JAILBREAK = "advanced_jailbreak"
+    """Sophisticated prompt injection techniques (DAN, role-playing, hypothetical scenarios)."""
+
+    SEMANTIC_SIMILARITY_ATTACK = "semantic_similarity_attack"
+    """Adversarial examples - inputs that look similar but have different meanings."""
+
+    FORMAT_POISONING = "format_poisoning"
+    """Structured data parsing and format injection attacks (JSON, XML, markdown)."""
+
+    LANGUAGE_MIXING = "language_mixing"
+    """Multilingual inputs, code-switching, and character set handling."""
+
+    TOKEN_MANIPULATION = "token_manipulation"
+    """Tokenizer edge cases, special tokens, and token boundary attacks."""
+
+    TEMPORAL_ATTACK = "temporal_attack"
+    """Time-sensitive context, outdated references, and temporal confusion."""
+
+    # System/Network-level attacks (8+ new types)
+    HTTP_HEADER_INJECTION = "http_header_injection"
+    """HTTP header manipulation and header-based injection attacks."""
+
+    PAYLOAD_SIZE_ATTACK = "payload_size_attack"
+    """Extremely large payloads, memory exhaustion, and size-based DoS."""
+
+    CONTENT_TYPE_CONFUSION = "content_type_confusion"
+    """Content-Type manipulation and MIME type confusion attacks."""
+
+    QUERY_PARAMETER_POISONING = "query_parameter_poisoning"
+    """Malicious query parameters, parameter pollution, and GET request attacks."""
+
+    REQUEST_METHOD_ATTACK = "request_method_attack"
+    """HTTP method confusion and method-based attacks."""
+
+    PROTOCOL_LEVEL_ATTACK = "protocol_level_attack"
+    """HTTP protocol-level attacks, request smuggling, chunked encoding, protocol confusion."""
+
+    RESOURCE_EXHAUSTION = "resource_exhaustion"
+    """CPU/memory exhaustion, infinite loops, and resource-based DoS."""
+
+    CONCURRENT_REQUEST_PATTERN = "concurrent_request_pattern"
+    """Race conditions, concurrent request handling, and state management under load."""
+
+    TIMEOUT_MANIPULATION = "timeout_manipulation"
+    """Timeout handling, slow request attacks, and hanging request patterns."""
+
     @property
     def display_name(self) -> str:
         """Human-readable name for display."""
@@ -60,6 +106,7 @@ class MutationType(str, Enum):
     def description(self) -> str:
         """Description of what this mutation type does."""
         descriptions = {
+            # Original 8 types
             MutationType.PARAPHRASE: "Rewrite using different words while preserving meaning",
             MutationType.NOISE: "Add typos and spelling errors",
             MutationType.TONE_SHIFT: "Change tone to aggressive/impatient",
@@ -68,6 +115,24 @@ class MutationType(str, Enum):
             MutationType.CONTEXT_MANIPULATION: "Add, remove, or reorder context information",
             MutationType.LENGTH_EXTREMES: "Create empty, minimal, or very long versions",
             MutationType.CUSTOM: "Apply user-defined mutation templates",
+            # Advanced prompt-level attacks
+            MutationType.MULTI_TURN_ATTACK: "Create fake conversation history with contradictory or manipulative prior turns",
+            MutationType.ADVANCED_JAILBREAK: "Use advanced jailbreak patterns: role-playing, hypothetical scenarios, developer mode",
+            MutationType.SEMANTIC_SIMILARITY_ATTACK: "Generate inputs that are lexically or structurally similar but semantically different",
+            MutationType.FORMAT_POISONING: "Inject structured data (JSON, XML, markdown, YAML) with malicious payloads",
+            MutationType.LANGUAGE_MIXING: "Mix languages, scripts (Latin, Cyrillic, CJK), emoji, and code-switching patterns",
+            MutationType.TOKEN_MANIPULATION: "Insert special tokens, manipulate token boundaries, use tokenizer-breaking sequences",
+            MutationType.TEMPORAL_ATTACK: "Add impossible dates, outdated references, conflicting temporal information",
+            # System/Network-level attacks
+            MutationType.HTTP_HEADER_INJECTION: "Generate prompts with HTTP header-like patterns and injection attempts",
+            MutationType.PAYLOAD_SIZE_ATTACK: "Generate prompts designed to create massive payloads when serialized",
+            MutationType.CONTENT_TYPE_CONFUSION: "Include content-type manipulation instructions or format confusion patterns",
+            MutationType.QUERY_PARAMETER_POISONING: "Include query parameter patterns, parameter pollution attempts, or query-based injection",
+            MutationType.REQUEST_METHOD_ATTACK: "Include HTTP method manipulation instructions or method-based attack patterns",
+            MutationType.PROTOCOL_LEVEL_ATTACK: "Include protocol-level attack patterns, request smuggling instructions, or protocol manipulation",
+            MutationType.RESOURCE_EXHAUSTION: "Generate prompts with patterns designed to exhaust resources: deeply nested JSON, recursive structures",
+            MutationType.CONCURRENT_REQUEST_PATTERN: "Generate prompts with patterns designed for concurrent execution and state manipulation",
+            MutationType.TIMEOUT_MANIPULATION: "Generate prompts with patterns designed to cause timeouts or slow processing",
         }
         return descriptions.get(self, "Unknown mutation type")
 
@@ -75,6 +140,7 @@ class MutationType(str, Enum):
     def default_weight(self) -> float:
         """Default scoring weight for this mutation type."""
         weights = {
+            # Original 8 types
             MutationType.PARAPHRASE: 1.0,
             MutationType.NOISE: 0.8,
             MutationType.TONE_SHIFT: 0.9,
@@ -83,13 +149,32 @@ class MutationType(str, Enum):
             MutationType.CONTEXT_MANIPULATION: 1.1,
             MutationType.LENGTH_EXTREMES: 1.2,
             MutationType.CUSTOM: 1.0,
+            # Advanced prompt-level attacks
+            MutationType.MULTI_TURN_ATTACK: 1.4,
+            MutationType.ADVANCED_JAILBREAK: 2.0,
+            MutationType.SEMANTIC_SIMILARITY_ATTACK: 1.3,
+            MutationType.FORMAT_POISONING: 1.6,
+            MutationType.LANGUAGE_MIXING: 1.2,
+            MutationType.TOKEN_MANIPULATION: 1.5,
+            MutationType.TEMPORAL_ATTACK: 1.1,
+            # System/Network-level attacks
+            MutationType.HTTP_HEADER_INJECTION: 1.7,
+            MutationType.PAYLOAD_SIZE_ATTACK: 1.4,
+            MutationType.CONTENT_TYPE_CONFUSION: 1.5,
+            MutationType.QUERY_PARAMETER_POISONING: 1.6,
+            MutationType.REQUEST_METHOD_ATTACK: 1.3,
+            MutationType.PROTOCOL_LEVEL_ATTACK: 1.8,
+            MutationType.RESOURCE_EXHAUSTION: 1.5,
+            MutationType.CONCURRENT_REQUEST_PATTERN: 1.4,
+            MutationType.TIMEOUT_MANIPULATION: 1.3,
         }
         return weights.get(self, 1.0)
 
     @classmethod
     def open_source_types(cls) -> list[MutationType]:
-        """Get mutation types available in Open Source edition."""
+        """Get mutation types available in Open Source edition (all 22+ types)."""
         return [
+            # Original 8 types
             cls.PARAPHRASE,
             cls.NOISE,
             cls.TONE_SHIFT,
@@ -98,6 +183,24 @@ class MutationType(str, Enum):
             cls.CONTEXT_MANIPULATION,
             cls.LENGTH_EXTREMES,
             cls.CUSTOM,
+            # Advanced prompt-level attacks
+            cls.MULTI_TURN_ATTACK,
+            cls.ADVANCED_JAILBREAK,
+            cls.SEMANTIC_SIMILARITY_ATTACK,
+            cls.FORMAT_POISONING,
+            cls.LANGUAGE_MIXING,
+            cls.TOKEN_MANIPULATION,
+            cls.TEMPORAL_ATTACK,
+            # System/Network-level attacks
+            cls.HTTP_HEADER_INJECTION,
+            cls.PAYLOAD_SIZE_ATTACK,
+            cls.CONTENT_TYPE_CONFUSION,
+            cls.QUERY_PARAMETER_POISONING,
+            cls.REQUEST_METHOD_ATTACK,
+            cls.PROTOCOL_LEVEL_ATTACK,
+            cls.RESOURCE_EXHAUSTION,
+            cls.CONCURRENT_REQUEST_PATTERN,
+            cls.TIMEOUT_MANIPULATION,
         ]
 
 

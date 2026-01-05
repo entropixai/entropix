@@ -36,6 +36,20 @@ Instead of running one test case, Flakestorm takes a single "Golden Prompt", gen
 
 > **"If it passes Flakestorm, it won't break in Production."**
 
+## Production-First by Design
+
+Flakestorm is designed for teams already running AI agents in production. Most production agents use cloud LLM APIs (OpenAI, Gemini, Claude, Perplexity, etc.) and face real traffic, real users, and real abuse patterns.
+
+**Why local LLMs exist in the open source version:**
+- Fast experimentation and proofs-of-concept
+- CI-friendly testing without external dependencies
+- Transparent, extensible chaos engine
+
+**Why production chaos should mirror production reality:**
+Production agents run on cloud infrastructure, process real user inputs, and scale dynamically. Chaos testing should reflect this reality—testing against the same infrastructure, scale, and patterns your agents face in production.
+
+The cloud version removes operational friction: no local model setup, no environment configuration, scalable mutation runs, shared dashboards, and team collaboration. Open source proves the value; cloud delivers production-grade chaos engineering.
+
 ## Who Flakestorm Is For
 
 - **Teams shipping AI agents to production** — Catch failures before users do
@@ -76,14 +90,9 @@ Flakestorm is built for production-grade agents handling real traffic. While it 
 Flakestorm follows a simple but powerful workflow:
 
 1. **You provide "Golden Prompts"** — example inputs that should always work correctly
-2. **Flakestorm generates mutations** — using a local LLM, it creates adversarial variations:
-   - Paraphrases (same meaning, different words)
-   - Typos and noise (realistic user errors)
-   - Tone shifts (frustrated, urgent, aggressive users)
-   - Prompt injections (security attacks)
-   - Encoding attacks (Base64, URL encoding)
-   - Context manipulation (noisy, verbose inputs)
-   - Length extremes (empty, very long inputs)
+2. **Flakestorm generates mutations** — using a local LLM, it creates adversarial variations across 22+ mutation types:
+   - **Prompt-level**: Paraphrases, typos, tone shifts, prompt injections, encoding attacks, context manipulation, length extremes, multi-turn attacks, advanced jailbreaks, semantic similarity attacks, format poisoning, language mixing, token manipulation, temporal attacks
+   - **System/Network-level**: HTTP header injection, payload size attacks, content-type confusion, query parameter poisoning, request method attacks, protocol-level attacks, resource exhaustion, concurrent patterns, timeout manipulation
 3. **Your agent processes each mutation** — Flakestorm sends them to your agent endpoint
 4. **Invariants are checked** — responses are validated against rules you define (latency, content, safety)
 5. **Robustness Score is calculated** — weighted by mutation difficulty and importance
@@ -91,30 +100,39 @@ Flakestorm follows a simple but powerful workflow:
 
 The result: You know exactly how your agent will behave under stress before users ever see it.
 
+> **Note**: The open source version uses local LLMs (Ollama) for mutation generation. The cloud version (in development) uses production-grade infrastructure to mirror real-world chaos testing at scale.
+
 ## Features
 
-- ✅ **8 Core Mutation Types**: Comprehensive robustness testing covering semantic, input, security, and edge cases
+- ✅ **22+ Core Mutation Types**: Comprehensive robustness testing covering:
+  - **Prompt-level attacks**: Paraphrase, noise, tone shift, prompt injection, encoding, context manipulation, length extremes, multi-turn attacks, advanced jailbreaks, semantic similarity, format poisoning, language mixing, token manipulation, temporal attacks
+  - **System/Network-level attacks**: HTTP header injection, payload size attacks, content-type confusion, query parameter poisoning, request method attacks, protocol-level attacks, resource exhaustion, concurrent patterns, timeout manipulation
 - ✅ **Invariant Assertions**: Deterministic checks, semantic similarity, basic safety
-- ✅ **Local-First**: Uses Ollama with Qwen 3 8B for free testing
 - ✅ **Beautiful Reports**: Interactive HTML reports with pass/fail matrices
+- ✅ **Open Source Core**: Full chaos engine available locally for experimentation and CI
 
-## Toward a Zero-Setup Path
+## Open Source vs Cloud
 
- Future improvements include:
+**Open Source (Always Free):**
+- Core chaos engine with all 22+ mutation types (no artificial feature gating)
+- Local execution for fast experimentation
+- CI-friendly usage without external dependencies
+- Full transparency and extensibility
+- Perfect for proofs-of-concept and development workflows
 
-- **Cloud-hosted mutation generation**: No need to install Ollama locally
-- **One-command setup**: Automated installation and configuration
-- **Docker containers**: Pre-configured environments for instant testing
-- **CI/CD integrations**: Native GitHub Actions, GitLab CI, and more
-- **Comprehensive Reporting**: Dashboard and reports with team collaboration.
+**Cloud (In Progress / Waitlist):**
+- Zero-setup chaos testing (no Ollama, no local models)
+- Scalable runs (thousands of mutations)
+- Shared dashboards & reports
+- Team collaboration
+- Scheduled & continuous chaos runs
+- Production-grade reliability workflows
 
-The goal: Test your agent's robustness with a single command, no local dependencies required.
-
-For now, the local execution path gives you full control and privacy. As we build toward zero-setup, you'll always have the option to run everything locally.
+**Our Philosophy:** We do not cripple the OSS version. Cloud exists to remove operational pain, not to lock features. Open source proves the value; cloud delivers production-grade chaos engineering at scale.
 
 # Try Flakestorm in ~60 Seconds
 
-Want to see Flakestorm in action immediately? Here's the fastest path:
+This is the fastest way to try Flakestorm locally. Production teams typically use the cloud version (waitlist). Here's the local quickstart:
 
 1. **Install flakestorm** (if you have Python 3.10+):
    ```bash
@@ -166,6 +184,12 @@ That's it! You'll get a robustness score and detailed report showing how your ag
 - [📋 API Specification](docs/API_SPECIFICATION.md) - API reference
 - [🧪 Testing Guide](docs/TESTING_GUIDE.md) - How to run and write tests
 - [✅ Implementation Checklist](docs/IMPLEMENTATION_CHECKLIST.md) - Development progress
+
+## Cloud Version (Early Access)
+
+For teams running production AI agents, the cloud version removes operational friction: zero-setup chaos testing without local model configuration, scalable mutation runs that mirror production traffic, shared dashboards for team collaboration, and continuous chaos runs integrated into your reliability workflows.
+
+The cloud version is currently in early access. [Join the waitlist](https://flakestorm.com) to get access as we roll it out.
 
 ## License
 
