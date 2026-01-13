@@ -140,6 +140,26 @@ flakestorm/
 
 ## How to Contribute
 
+### Finding Good First Issues
+
+New to contributing? Look for issues labeled `good first issue` on GitHub. These are specifically curated for beginners and include:
+- Clear problem statements
+- Well-defined scope
+- Helpful guidance in the issue description
+- Good learning opportunities
+
+To find them:
+1. Go to [Issues](https://github.com/flakestorm/flakestorm/issues)
+2. Filter by label: `good first issue`
+3. Read the issue description and ask questions if needed
+4. Comment on the issue to let others know you're working on it
+
+**Note for Maintainers**: To add `good first issue` labels to beginner-friendly issues:
+- Look for issues that are well-scoped and have clear acceptance criteria
+- Add the `good first issue` label via GitHub's web interface
+- Ensure the issue description includes context and guidance for new contributors
+- Consider 5-10 issues at a time to give beginners options
+
 ### Reporting Bugs
 
 1. Check existing issues first

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://flakestorm.dev/docs
+    about: Check our documentation for usage guides and examples
+  - name: Community Discussions
+    url: https://github.com/flakestorm/flakestorm/discussions
+    about: Ask questions and share ideas with the community

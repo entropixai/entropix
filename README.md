@@ -12,6 +12,18 @@
   <a href="https://github.com/flakestorm/flakestorm">
     <img src="https://img.shields.io/github/stars/flakestorm/flakestorm?style=social" alt="GitHub Stars">
   </a>
+  <a href="https://pypi.org/project/flakestorm/">
+    <img src="https://img.shields.io/pypi/v/flakestorm.svg" alt="PyPI version">
+  </a>
+  <a href="https://pypi.org/project/flakestorm/">
+    <img src="https://img.shields.io/pypi/dm/flakestorm.svg" alt="PyPI downloads">
+  </a>
+  <a href="https://github.com/flakestorm/flakestorm/actions">
+    <img src="https://img.shields.io/github/actions/workflow/status/flakestorm/flakestorm/ci.yml?branch=main" alt="Build Status">
+  </a>
+  <a href="https://github.com/flakestorm/flakestorm/releases">
+    <img src="https://img.shields.io/github/v/release/flakestorm/flakestorm" alt="Latest Release">
+  </a>
 </p>
 
 ---
@@ -161,6 +173,13 @@ That's it! You'll get a robustness score and detailed report showing how your ag
 > **Note**: For full local execution (including mutation generation), you'll need Ollama installed. See the [Usage Guide](docs/USAGE_GUIDE.md) for complete setup instructions.
 
 
+
+## Roadmap
+
+See what's coming next! Check out our [Roadmap](ROADMAP.md) for upcoming features including:
+- 🚀 Pattern Engine Upgrade with 110+ Prompt Injection Patterns and 52+ PII Detection Patterns
+- ☁️ Cloud Version enhancements (scalable runs, team collaboration, continuous testing)
+- 🏢 Enterprise features (on-premise deployment, custom patterns, compliance certifications)
 
 ## Documentation
 
