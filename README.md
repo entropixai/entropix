@@ -102,9 +102,10 @@ Flakestorm is built for production-grade agents handling real traffic. While it 
 Flakestorm follows a simple but powerful workflow:
 
 1. **You provide "Golden Prompts"** — example inputs that should always work correctly
-2. **Flakestorm generates mutations** — using a local LLM, it creates adversarial variations across 22+ mutation types:
-   - **Prompt-level**: Paraphrases, typos, tone shifts, prompt injections, encoding attacks, context manipulation, length extremes, multi-turn attacks, advanced jailbreaks, semantic similarity attacks, format poisoning, language mixing, token manipulation, temporal attacks
-   - **System/Network-level**: HTTP header injection, payload size attacks, content-type confusion, query parameter poisoning, request method attacks, protocol-level attacks, resource exhaustion, concurrent patterns, timeout manipulation
+2. **Flakestorm generates mutations** — using a local LLM, it creates adversarial variations across 24 mutation types:
+   - **Core prompt-level (8)**: Paraphrase, noise, tone shift, prompt injection, encoding attacks, context manipulation, length extremes, custom
+   - **Advanced prompt-level (7)**: Multi-turn attacks, advanced jailbreaks, semantic similarity attacks, format poisoning, language mixing, token manipulation, temporal attacks
+   - **System/Network-level (9)**: HTTP header injection, payload size attacks, content-type confusion, query parameter poisoning, request method attacks, protocol-level attacks, resource exhaustion, concurrent patterns, timeout manipulation
 3. **Your agent processes each mutation** — Flakestorm sends them to your agent endpoint
 4. **Invariants are checked** — responses are validated against rules you define (latency, content, safety)
 5. **Robustness Score is calculated** — weighted by mutation difficulty and importance
@@ -116,9 +117,10 @@ The result: You know exactly how your agent will behave under stress before user
 
 ## Features
 
-- ✅ **22+ Core Mutation Types**: Comprehensive robustness testing covering:
-  - **Prompt-level attacks**: Paraphrase, noise, tone shift, prompt injection, encoding, context manipulation, length extremes, multi-turn attacks, advanced jailbreaks, semantic similarity, format poisoning, language mixing, token manipulation, temporal attacks
-  - **System/Network-level attacks**: HTTP header injection, payload size attacks, content-type confusion, query parameter poisoning, request method attacks, protocol-level attacks, resource exhaustion, concurrent patterns, timeout manipulation
+- ✅ **24 Mutation Types**: Comprehensive robustness testing covering:
+  - **Core prompt-level attacks (8)**: Paraphrase, noise, tone shift, prompt injection, encoding attacks, context manipulation, length extremes, custom
+  - **Advanced prompt-level attacks (7)**: Multi-turn attacks, advanced jailbreaks, semantic similarity attacks, format poisoning, language mixing, token manipulation, temporal attacks
+  - **System/Network-level attacks (9)**: HTTP header injection, payload size attacks, content-type confusion, query parameter poisoning, request method attacks, protocol-level attacks, resource exhaustion, concurrent patterns, timeout manipulation
 - ✅ **Invariant Assertions**: Deterministic checks, semantic similarity, basic safety
 - ✅ **Beautiful Reports**: Interactive HTML reports with pass/fail matrices
 - ✅ **Open Source Core**: Full chaos engine available locally for experimentation and CI
@@ -126,7 +128,7 @@ The result: You know exactly how your agent will behave under stress before user
 ## Open Source vs Cloud
 
 **Open Source (Always Free):**
-- Core chaos engine with all 22+ mutation types (no artificial feature gating)
+- Core chaos engine with all 24 mutation types (no artificial feature gating)
 - Local execution for fast experimentation
 - CI-friendly usage without external dependencies
 - Full transparency and extensibility
@@ -198,6 +200,9 @@ See what's coming next! Check out our [Roadmap](ROADMAP.md) for upcoming feature
 ### Troubleshooting
 - [🔧 Fix Installation Issues](FIX_INSTALL.md) - Resolve `ModuleNotFoundError: No module named 'flakestorm.reports'`
 - [🔨 Fix Build Issues](BUILD_FIX.md) - Resolve `pip install .` vs `pip install -e .` problems
+
+### Support
+- [🐛 Issue Templates](https://github.com/flakestorm/flakestorm/tree/main/.github/ISSUE_TEMPLATE) - Use our issue templates to report bugs, request features, or ask questions
 
 ### Reference
 - [📋 API Specification](docs/API_SPECIFICATION.md) - API reference
