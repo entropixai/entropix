@@ -232,5 +232,5 @@ Apache 2.0 - See [LICENSE](LICENSE) for details.
 ---
 
 <p align="center">
-  ❤️ <a href="https://github.com/sponsors/flakestorm">Sponsor flakestorm on GitHub</a>
+  ❤️ <a href="https://github.com/sponsors/flakestorm">Sponsor Flakestorm on GitHub</a>
 </p>
