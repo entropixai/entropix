@@ -228,4 +228,4 @@ Apache 2.0 - See [LICENSE](LICENSE) for details.
 
 
 
-<iframe src="https://github.com/sponsors/flakestorm/card" title="Sponsor flakestorm" height="225" width="600" style="border: 0;"></iframe>
+
